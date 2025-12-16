@@ -1,67 +1,17 @@
-public import HTML_Rendering
+//
+//  File.swift
+//  swift-markdown-html-rendering
+//
+//  Created by Coen ten Thije Boonkkamp on 16/12/2025.
+//
+
+import HTML_Rendering
 @_spi(DynamicHTML) public import HTML_Renderable
-public import CSS_HTML_Rendering
-public import CSS_Theming
-public import Markdown
+import CSS_HTML_Rendering
+import CSS_Theming
+import Markdown
 
-// Inline SVG for heading links
-private struct LinkIcon: HTML.View, Sendable {
-    var body: some HTML.View {
-        HTML.Raw("""
-            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M432-288H288q-79.68 0-135.84-56.23Q96-400.45 96-480.23 96-560 152.16-616q56.16-56 135.84-56h144v72H288q-50 0-85 35t-35 85q0 50 35 85t85 35h144v72Zm-96-156v-72h288v72H336Zm192 156v-72h144q50 0 85-35t35-85q0-50-35-85t-85-35H528v-72h144q79.68 0 135.84 56.23 56.16 56.22 56.16 136Q864-400 807.84-344 751.68-288 672-288H528Z"/></svg>
-            """)
-    }
-}
-
-public struct HTMLMarkdown: HTML.View {
-    public struct Section {
-        public let title: String
-        public let id: String
-        public let level: Int
-        public let timestamp: Timestamp?
-
-        public var anchor: String {
-            "#\(id)"
-        }
-
-        public init(title: String, id: String, level: Int, timestamp: Timestamp?) {
-            self.title = title
-            self.id = id
-            self.level = level
-            self.timestamp = timestamp
-        }
-    }
-
-    public let markdown: String
-    public let previewOnly: Bool
-    public let tableOfContents: [Section]
-    public let content: HTML.AnyView
-
-    public init(_ markdown: String, previewOnly: Bool = false) {
-        self.markdown = markdown
-        self.previewOnly = previewOnly
-        var converter = HTMLConverter(previewOnly: previewOnly)
-        self.content = converter.visit(Document(parsing: markdown, options: .parseBlockDirectives))
-        self.tableOfContents = converter.tableOfContents
-    }
-
-    public var body: some HTML.View {
-        ContentDivision() {
-            VStack(spacing: .rem(0.5)) {
-                content
-            }
-            .css
-            .inlineStyle(
-                "mask-image",
-                previewOnly ? "linear-gradient(to bottom,black 50%,transparent 100%)" : nil
-            )
-        }
-        .css
-        .display(.block)
-    }
-}
-
-private struct HTMLConverter: MarkupVisitor {
+struct HTMLConverter: MarkupVisitor {
     typealias Result = HTML.AnyView
 
     let previewOnly: Bool
@@ -73,7 +23,7 @@ private struct HTMLConverter: MarkupVisitor {
     private var currentTimestamp: Timestamp?
     private var currentSection: (title: String, id: String, level: Int)?
     private var ids: Set<Slug> = []
-    var tableOfContents: [HTMLMarkdown.Section] = []
+    var tableOfContents: [HTML.Markdown.Section] = []
 
     @HTML.Builder
     mutating func defaultVisit(_ markup: any Markup) -> HTML.AnyView {
@@ -123,7 +73,7 @@ private struct HTMLConverter: MarkupVisitor {
                 timestamp
                 if let currentSection {
                     let _ = tableOfContents.append(
-                        HTMLMarkdown.Section(
+                        HTML.Markdown.Section(
                             title: currentSection.title,
                             id: currentSection.id,
                             level: currentSection.level,
@@ -489,172 +439,5 @@ extension Markdown.Table.ColumnAlignment {
         case .left: "left"
         case .right: "right"
         }
-    }
-}
-
-extension HTML.Builder {
-    @_disfavoredOverload
-    fileprivate static func buildExpression(_ expression: any HTML.View) -> HTML.AnyView {
-        AnyHTML(expression)
-    }
-
-    @_disfavoredOverload
-    fileprivate static func buildFinalResult(_ component: some HTML.View) -> HTML.AnyView {
-        AnyHTML{component}
-    }
-}
-
-private struct BlockQuoteStyle {
-    var backgroundColor: DarkModeColor
-    var borderColor: DarkModeColor
-
-    init(blockName: String) {
-        switch blockName {
-        case "Warning", "Correction":
-            self.backgroundColor = DarkModeColor(light: .hex("FDF2F4"), dark: .hex("2E0402"))
-            self.borderColor = DarkModeColor(light: .hex("D02C1E"), dark: .hex("EB4642"))
-        case "Important":
-            self.backgroundColor = DarkModeColor(light: .hex("FEFBF3"), dark: .hex("291F04"))
-            self.borderColor = DarkModeColor(light: .hex("966922"), dark: .hex("F4B842"))
-        case "Announcement", "Tip":
-            self.backgroundColor = DarkModeColor(light: .hex("FBFFFF"), dark: .hex("0F2C2B"))
-            self.borderColor = DarkModeColor(light: .hex("4B767C"), dark: .hex("9FFCE5"))
-        case "Preamble":
-            self.backgroundColor = DarkModeColor(light: .hex("FBF8FF"), dark: .hex("1e1925"))
-            self.borderColor = DarkModeColor(light: .hex("8D51F6"), dark: .hex("8D51F6"))
-        default:
-            self.backgroundColor = DarkModeColor(light: .hex("f5f5f5"), dark: .hex("323232"))
-            self.borderColor = DarkModeColor(light: .hex("696969"), dark: .hex("9a9a9a"))
-        }
-    }
-}
-
-private func value(forArgument argument: String, block: BlockDirective) -> String? {
-    block.argumentText.segments
-        .compactMap {
-            let text = $0.trimmedText.drop(while: { $0 == " " })
-            return text.hasPrefix("\(argument): \"")
-                ? text.dropFirst("\(argument): \"".count).prefix(while: { $0 != "\"" })
-                : nil
-        }
-        .first
-        .map(String.init)
-}
-
-extension DiagnosticLevel {
-    fileprivate init?(aside: Markdown.Aside) {
-        switch aside.kind.rawValue {
-        case "Error": self = .error
-        case "Expected Failure": self = .knownIssue
-        case "Failed": self = .issue
-        case "Runtime Warning": self = .runtimeWarning
-        case "Warning": self = .warning
-        default: return nil
-        }
-    }
-}
-
-public struct Timestamp: HTML.View {
-    public var hour: Int
-    public var minute: Int
-    public var second: Int
-    public var speaker: String?
-
-    public init?(format: String, speaker: String?) {
-        let components = format.split(separator: ":")
-        guard let second = components.last.flatMap({ Int($0) }) else { return nil }
-        self.hour = components.dropLast(2).last.flatMap { Int($0) } ?? 0
-        self.minute = components.dropLast().last.flatMap { Int($0) } ?? 0
-        self.second = second
-        self.speaker = speaker
-    }
-
-    public var duration: Int {
-        hour * 60 * 60 + minute * 60 + second
-    }
-
-    public var id: String {
-        "t\(duration)"
-    }
-
-    public var anchor: String {
-        "#\(id)"
-    }
-
-    public func formatted() -> String {
-        var formatted = hour > 0 ? "\(hour):" : ""
-        formatted.append("\(hour > 0 && minute < 10 ? "0" : "")\(minute):")
-        formatted.append("\(second < 10 ? "0" : "")\(second)")
-        return formatted
-    }
-
-    public var body: some HTML.View {
-        ContentDivision() {
-            if let speaker {
-                StrongImportance() {
-                    HTML.Text(speaker)
-                }
-                .css
-                .color(DarkModeColor.gray500)
-                .fontSize(FontSize.rem(0.875))
-                .inlineStyle("text-transform", "uppercase")
-                .desktop {
-                    $0.lineHeight(1)
-                      .position(.relative)
-                      .top(Top.rem(0.5))
-                }
-            }
-
-            let duration = self.duration
-            ContentDivision() {
-                ContentDivision() {
-                    Anchor(href: .init(value: anchor)) {
-                        HTML.Text(formatted())
-                    }
-                    .attribute("data-timestamp", "\(duration)")
-                    .css
-                    .color(DarkModeColor.gray800.withDarkColor(.gray300))
-                }
-                .id(id)
-                .css
-                .fontSize(FontSize.small)
-                .textDecoration(TextDecoration.none)
-                .inlineStyle("font-variant-numeric", "tabular-nums")
-                .desktop {
-                    $0.marginLeft(MarginLeft.rem(-4))
-                      .lineHeight(3)
-                      .position(.absolute)
-                      .textAlign(.right)
-                      .width(Width.rem(3.25))
-                }
-            }
-        }
-        .css
-        .mobile {
-            $0.display(Display.flex)
-              .flexDirection(FlexDirection.columnReverse)
-              .rowGap(RowGap.length(.rem(0.5)))
-        }
-    }
-}
-
-private struct Slug: Hashable {
-    var name: String
-    var generation: Int
-}
-
-extension Set<Slug> {
-    fileprivate func slug(for string: String) -> String {
-        var slug = Slug(name: string.slug(), generation: 0)
-        while contains(slug) {
-            slug.generation += 1
-        }
-        return "\(slug.name)\(slug.generation > 0 ? "-\(slug.generation)" : "")"
-    }
-}
-
-extension String {
-    fileprivate func slug() -> String {
-        split(whereSeparator: { !$0.isLetter && !$0.isNumber }).joined(separator: "-").lowercased()
     }
 }
