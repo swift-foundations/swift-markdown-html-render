@@ -114,11 +114,6 @@ extension String {
     }
 }
 
-extension Markdown.HTML {
-    public init(
-        @Markdown.HTML.Builder _ markdown: () -> String,
-        previewOnly: Bool = false
-    ) {
-        self = .init(markdown(), previewOnly: previewOnly)
-    }
-}
+// Note: Markdown.HTML now uses callAsFunction pattern
+// Usage: Markdown.HTML(previewOnly: false) { "# Hello" }
+// The builder is still useful for composing markdown strings via String(markdown: { ... })

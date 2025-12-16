@@ -7,24 +7,23 @@ public enum Markdown {}
 
 extension Markdown {
     public struct HTML {
-        public let markdown: String
         public let previewOnly: Bool
-        public let tableOfContents: [Section]
-        public let content: HTML_Renderable.HTML.AnyView
-
-        public init(_ markdown: String, previewOnly: Bool = false) {
-            self.markdown = markdown
+        
+        public init(previewOnly: Bool = false) {
             self.previewOnly = previewOnly
-            var converter = HTMLConverter(previewOnly: previewOnly)
-            self.content = converter.visit(SwiftMarkdown.Document(parsing: markdown, options: .parseBlockDirectives))
-            self.tableOfContents = converter.tableOfContents
         }
     }
 }
 
-extension Markdown.HTML: HTML_Renderable.HTML.View {
-    public var body: some HTML_Renderable.HTML.View {
-        ContentDivision() {
+extension Markdown.HTML {
+    public func callAsFunction(
+        @Markdown.HTML.Builder _ markdown: () -> String
+    ) -> some HTML_Renderable.HTML.View {
+        let markdownString = markdown()
+        var converter = HTMLConverter(previewOnly: previewOnly)
+        let content = converter.visit(SwiftMarkdown.Document(parsing: markdownString, options: .parseBlockDirectives))
+        
+        return ContentDivision() {
             VStack(spacing: .rem(0.5)) {
                 content
             }
@@ -37,6 +36,12 @@ extension Markdown.HTML: HTML_Renderable.HTML.View {
         .css
         .display(.block)
     }
+    
+    public static func tableOfContents(from markdown: String) -> [Section] {
+        var converter = HTMLConverter(previewOnly: false)
+        _ = converter.visit(SwiftMarkdown.Document(parsing: markdown, options: .parseBlockDirectives))
+        return converter.tableOfContents
+    }
 }
 
 extension Markdown.HTML {
@@ -45,11 +50,11 @@ extension Markdown.HTML {
         public let id: String
         public let level: Int
         public let timestamp: Timestamp?
-
+        
         public var anchor: String {
             "#\(id)"
         }
-
+        
         public init(title: String, id: String, level: Int, timestamp: Timestamp?) {
             self.title = title
             self.id = id

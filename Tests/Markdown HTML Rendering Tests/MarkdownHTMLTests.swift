@@ -15,8 +15,8 @@ import HTML_Rendering_TestSupport
 struct MarkdownHTMLTests {
     @Test("Basic markdown rendering")
     func basicMarkdownRendering() {
-        let markdown = Markdown.HTML("# Hello World")
-        #expect(markdown.tableOfContents.count >= 0)
+        let toc = Markdown.HTML.tableOfContents(from: "# Hello World")
+        #expect(toc.count >= 0)
     }
 }
 
@@ -24,7 +24,7 @@ struct MarkdownHTMLTests {
 
 extension SnapshotTests.MarkdownHTML {
     @Test func heading() {
-        let markdown = Markdown.HTML("# Hello World")
+        let markdown = Markdown.HTML() { "# Hello World" }
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -41,7 +41,7 @@ extension SnapshotTests.MarkdownHTML {
     }
 
     @Test func paragraph() {
-        let markdown = Markdown.HTML("This is a paragraph.")
+        let markdown = Markdown.HTML() { "This is a paragraph." }
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -56,11 +56,13 @@ extension SnapshotTests.MarkdownHTML {
     }
 
     @Test func codeBlock() {
-        let markdown = Markdown.HTML("""
+        let markdown = Markdown.HTML() {
+            """
             ```swift
             let x = 1
             ```
-            """)
+            """
+        }
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -75,7 +77,7 @@ extension SnapshotTests.MarkdownHTML {
     }
 
     @Test func blockquote() {
-        let markdown = Markdown.HTML("> This is a quote")
+        let markdown = Markdown.HTML() { "> This is a quote" }
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -94,7 +96,7 @@ extension SnapshotTests.MarkdownHTML {
     }
 
     @Test func link() {
-        let markdown = Markdown.HTML("[Link](https://example.com)")
+        let markdown = Markdown.HTML() { "[Link](https://example.com)" }
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -109,11 +111,13 @@ extension SnapshotTests.MarkdownHTML {
     }
 
     @Test func orderedList() {
-        let markdown = Markdown.HTML("""
+        let markdown = Markdown.HTML() {
+            """
             1. First
             2. Second
             3. Third
-            """)
+            """
+        }
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -146,11 +150,13 @@ extension SnapshotTests.MarkdownHTML {
     }
 
     @Test func unorderedList() {
-        let markdown = Markdown.HTML("""
+        let markdown = Markdown.HTML() {
+            """
             - Apple
             - Banana
             - Cherry
-            """)
+            """
+        }
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -183,11 +189,13 @@ extension SnapshotTests.MarkdownHTML {
     }
 
     @Test func table() {
-        let markdown = Markdown.HTML("""
+        let markdown = Markdown.HTML() {
+            """
             | Header 1 | Header 2 |
             |----------|----------|
             | Cell 1   | Cell 2   |
-            """)
+            """
+        }
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -218,7 +226,7 @@ extension SnapshotTests.MarkdownHTML {
     }
 
     @Test func emphasis() {
-        let markdown = Markdown.HTML("*italic* and **bold** and ***both***")
+        let markdown = Markdown.HTML() { "*italic* and **bold** and ***both***" }
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -233,7 +241,7 @@ extension SnapshotTests.MarkdownHTML {
     }
 
     @Test func inlineCode() {
-        let markdown = Markdown.HTML("Use `print()` to output")
+        let markdown = Markdown.HTML() { "Use `print()` to output" }
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -248,7 +256,7 @@ extension SnapshotTests.MarkdownHTML {
     }
 
     @Test func image() {
-        let markdown = Markdown.HTML("![Alt text](image.png)")
+        let markdown = Markdown.HTML() { "![Alt text](image.png)" }
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -265,7 +273,7 @@ extension SnapshotTests.MarkdownHTML {
     }
 
     @Test func thematicBreak() {
-        let markdown = Markdown.HTML("Before\n\n---\n\nAfter")
+        let markdown = Markdown.HTML() { "Before\n\n---\n\nAfter" }
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -285,7 +293,7 @@ extension SnapshotTests.MarkdownHTML {
     }
 
     @Test func tableOfContents() {
-        let markdown = Markdown.HTML("""
+        let toc = Markdown.HTML.tableOfContents(from: """
             # Section 1
             @T(0:00)
             Content
@@ -296,6 +304,6 @@ extension SnapshotTests.MarkdownHTML {
             @T(2:00)
             Final content
             """)
-        #expect(markdown.tableOfContents.count == 3)
+        #expect(toc.count == 3)
     }
 }
