@@ -12,7 +12,7 @@ import HTML_Renderable
 
 #Preview("Heading") {
     HTML.Document {
-        Markdown.HTML() {
+        Markdown.HTML {
             "# Hello World"
         }
     }
@@ -20,7 +20,7 @@ import HTML_Renderable
 
 #Preview("Paragraph") {
     HTML.Document {
-        Markdown.HTML() {
+        Markdown.HTML {
             "This is a paragraph with some text."
         }
     }
@@ -28,7 +28,7 @@ import HTML_Renderable
 
 #Preview("Code Block") {
     HTML.Document {
-        Markdown.HTML() {
+        Markdown.HTML {
             """
             ```swift
             let x = 1
@@ -41,7 +41,7 @@ import HTML_Renderable
 
 #Preview("Blockquote") {
     HTML.Document {
-        Markdown.HTML() {
+        Markdown.HTML {
             "> This is a quote"
         }
     }
@@ -49,7 +49,7 @@ import HTML_Renderable
 
 #Preview("Link") {
     HTML.Document {
-        Markdown.HTML() {
+        Markdown.HTML {
             "[Link to Example](https://example.com)"
         }
     }
@@ -57,7 +57,7 @@ import HTML_Renderable
 
 #Preview("Ordered List") {
     HTML.Document {
-        Markdown.HTML() {
+        Markdown.HTML {
             """
             1. First item
             2. Second item
@@ -69,7 +69,7 @@ import HTML_Renderable
 
 #Preview("Unordered List") {
     HTML.Document {
-        Markdown.HTML() {
+        Markdown.HTML {
             """
             - Apple
             - Banana
@@ -81,7 +81,7 @@ import HTML_Renderable
 
 #Preview("Table") {
     HTML.Document {
-        Markdown.HTML() {
+        Markdown.HTML {
             """
             | Header 1 | Header 2 |
             |----------|----------|
@@ -94,7 +94,7 @@ import HTML_Renderable
 
 #Preview("Emphasis") {
     HTML.Document {
-        Markdown.HTML() {
+        Markdown.HTML {
             "*italic* and **bold** and ***both***"
         }
     }
@@ -102,7 +102,7 @@ import HTML_Renderable
 
 #Preview("Inline Code") {
     HTML.Document {
-        Markdown.HTML() {
+        Markdown.HTML {
             "Use `print()` to output text"
         }
     }
@@ -110,7 +110,7 @@ import HTML_Renderable
 
 #Preview("Image") {
     HTML.Document {
-        Markdown.HTML() {
+        Markdown.HTML {
             "![Alt text](https://via.placeholder.com/150)"
         }
     }
@@ -118,7 +118,7 @@ import HTML_Renderable
 
 #Preview("Thematic Break") {
     HTML.Document {
-        Markdown.HTML() {
+        Markdown.HTML {
             """
             Before the break
 
@@ -132,7 +132,7 @@ import HTML_Renderable
 
 #Preview("Complex Document") {
     HTML.Document {
-        Markdown.HTML() {
+        Markdown.HTML {
             """
             # Welcome
 
@@ -164,7 +164,7 @@ import HTML_Renderable
 #Preview("Diagnostic Error") {
     HTML.Document {
         Diagnostic(level: .error) {
-            Markdown.HTML() {
+            Markdown.HTML {
                 "This is an **error** message"
             }
         }
@@ -174,7 +174,7 @@ import HTML_Renderable
 #Preview("Diagnostic Warning") {
     HTML.Document {
         Diagnostic(level: .warning) {
-            Markdown.HTML() {
+            Markdown.HTML {
                 "This is a **warning** message"
             }
         }
@@ -183,7 +183,7 @@ import HTML_Renderable
 
 #Preview("Timestamp") {
     HTML.Document {
-        Markdown.HTML() {
+        Markdown.HTML {
             """
             # Episode 1
             @T(0:00) John
