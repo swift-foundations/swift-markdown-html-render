@@ -7,9 +7,14 @@ public enum Markdown {}
 
 extension Markdown {
     public struct HTML {
+        public let configuration: Configuration
         public let previewOnly: Bool
-        
-        public init(previewOnly: Bool = false) {
+
+        public init(
+            configuration: Configuration = .default,
+            previewOnly: Bool = false
+        ) {
+            self.configuration = configuration
             self.previewOnly = previewOnly
         }
     }
@@ -20,10 +25,10 @@ extension Markdown.HTML {
         @Markdown.HTML.Builder _ markdown: () -> String
     ) -> some HTML_Renderable.HTML.View {
         let markdownString = markdown()
-        var converter = HTMLConverter(previewOnly: previewOnly)
+        var converter = HTMLConverter(configuration: configuration, previewOnly: previewOnly)
         let content = converter.visit(SwiftMarkdown.Document(parsing: markdownString, options: .parseBlockDirectives))
-        
-        return ContentDivision() {
+
+        return ContentDivision {
             VStack(spacing: .rem(0.5)) {
                 content
             }
@@ -36,9 +41,12 @@ extension Markdown.HTML {
         .css
         .display(.block)
     }
-    
-    public static func tableOfContents(from markdown: String) -> [Section] {
-        var converter = HTMLConverter(previewOnly: false)
+
+    public static func tableOfContents(
+        from markdown: String,
+        configuration: Configuration = .default
+    ) -> [Section] {
+        var converter = HTMLConverter(configuration: configuration, previewOnly: false)
         _ = converter.visit(SwiftMarkdown.Document(parsing: markdown, options: .parseBlockDirectives))
         return converter.tableOfContents
     }
@@ -50,11 +58,11 @@ extension Markdown.HTML {
         public let id: String
         public let level: Int
         public let timestamp: Timestamp?
-        
+
         public var anchor: String {
             "#\(id)"
         }
-        
+
         public init(title: String, id: String, level: Int, timestamp: Timestamp?) {
             self.title = title
             self.id = id

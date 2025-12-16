@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  HTMLConverter.swift
 //  swift-markdown-html-rendering
 //
 //  Created by Coen ten Thije Boonkkamp on 16/12/2025.
@@ -13,22 +13,26 @@ import CSS_Theming
 struct HTMLConverter: SwiftMarkdown.MarkupVisitor {
     typealias Result = HTML.AnyView
 
+    let configuration: Markdown.HTML.Configuration
     let previewOnly: Bool
 
-    init(previewOnly: Bool) {
+    init(configuration: Markdown.HTML.Configuration, previewOnly: Bool) {
+        self.configuration = configuration
         self.previewOnly = previewOnly
     }
 
+    private var currentTimestamp: Timestamp?
+    private var currentSection: (title: String, id: String, level: Int)?
+    private var existingSlugs: Set<String> = []
+    var tableOfContents: [Markdown.HTML.Section] = []
+
     /// Extracts a named argument value from a BlockDirective.
-    /// Parses argument text like `source: "video.mp4", poster: "thumb.jpg"`.
     private func value(forArgument name: String, block: SwiftMarkdown.BlockDirective) -> String? {
         let text = block.argumentText.segments.map(\.trimmedText).joined()
-        // Find "name:" pattern
         guard let nameRange = text.range(of: "\(name):") ?? text.range(of: "\(name) :") else {
             return nil
         }
         var index = nameRange.upperBound
-        // Skip whitespace
         while index < text.endIndex && text[index].isWhitespace {
             index = text.index(after: index)
         }
@@ -36,7 +40,6 @@ struct HTMLConverter: SwiftMarkdown.MarkupVisitor {
 
         let firstChar = text[index]
         if firstChar == "\"" || firstChar == "'" {
-            // Quoted value
             let quote = firstChar
             index = text.index(after: index)
             let start = index
@@ -45,7 +48,6 @@ struct HTMLConverter: SwiftMarkdown.MarkupVisitor {
             }
             return String(text[start..<index])
         } else {
-            // Unquoted value - read until comma or end
             let start = index
             while index < text.endIndex && text[index] != "," && !text[index].isWhitespace {
                 index = text.index(after: index)
@@ -54,10 +56,53 @@ struct HTMLConverter: SwiftMarkdown.MarkupVisitor {
         }
     }
 
-    private var currentTimestamp: Timestamp?
-    private var currentSection: (title: String, id: String, level: Int)?
-    private var ids: Set<Slug> = []
-    var tableOfContents: [Markdown.HTML.Section] = []
+    /// Parse arguments from a block directive into a dictionary.
+    private func parseArguments(from block: SwiftMarkdown.BlockDirective) -> [String: String] {
+        var result: [String: String] = [:]
+        let text = block.argumentText.segments.map(\.trimmedText).joined()
+
+        // Simple parser for key: "value" or key: value patterns
+        var remaining = text[...]
+        while !remaining.isEmpty {
+            // Skip whitespace and commas
+            remaining = remaining.drop { $0.isWhitespace || $0 == "," }
+            guard !remaining.isEmpty else { break }
+
+            // Find key
+            guard let colonIndex = remaining.firstIndex(of: ":") else { break }
+            let key = String(remaining[..<colonIndex]).trimmingCharacters(in: .whitespaces)
+            remaining = remaining[remaining.index(after: colonIndex)...]
+
+            // Skip whitespace after colon
+            remaining = remaining.drop { $0.isWhitespace }
+            guard !remaining.isEmpty else { break }
+
+            // Parse value
+            let firstChar = remaining.first!
+            if firstChar == "\"" || firstChar == "'" {
+                let quote = firstChar
+                remaining = remaining.dropFirst()
+                if let endQuote = remaining.firstIndex(of: quote) {
+                    result[key] = String(remaining[..<endQuote])
+                    remaining = remaining[remaining.index(after: endQuote)...]
+                }
+            } else {
+                let endIndex = remaining.firstIndex { $0 == "," || $0.isWhitespace } ?? remaining.endIndex
+                result[key] = String(remaining[..<endIndex])
+                remaining = remaining[endIndex...]
+            }
+        }
+
+        return result
+    }
+
+    private mutating func generateSlug(for text: String) -> String {
+        let slug = configuration.slugGenerator.generate(
+            .init(text: text, existingSlugs: existingSlugs)
+        )
+        existingSlugs.insert(slug)
+        return slug
+    }
 
     @HTML.Builder
     mutating func defaultVisit(_ markup: any SwiftMarkdown.Markup) -> HTML.AnyView {
@@ -69,30 +114,9 @@ struct HTMLConverter: SwiftMarkdown.MarkupVisitor {
         }
     }
 
-    @HTML.Builder
     mutating func visitBlockDirective(_ blockDirective: SwiftMarkdown.BlockDirective) -> HTML.AnyView {
-        switch blockDirective.name {
-        case "Button":
-            VStack(alignment: .center) {
-                Anchor(
-                    href: .init(
-                        blockDirective.argumentText.segments.map(\.trimmedText).joined(
-                            separator: " "
-                        )
-                    )
-                ) {
-                    for child in blockDirective.children {
-                        visit(child)
-                    }
-                }
-                .css
-                .margin(Margin.sides(vertical: .rem(0.5), horizontal: .zero))
-            }
-
-        case "Comment":
-            HTML.Empty()
-
-        case "T":
+        // First, check if it's a timestamp directive (handled specially)
+        if blockDirective.name == "T" {
             let segments = blockDirective.argumentText.segments
                 .map(\.trimmedText)
                 .joined()
@@ -103,10 +127,9 @@ struct HTMLConverter: SwiftMarkdown.MarkupVisitor {
                     format: String(segment),
                     speaker: segments.dropFirst().first.map { String($0) }
                 )
-                let _ = currentTimestamp = timestamp
-                timestamp
+                currentTimestamp = timestamp
                 if let currentSection {
-                    let _ = tableOfContents.append(
+                    tableOfContents.append(
                         Markdown.HTML.Section(
                             title: currentSection.title,
                             id: currentSection.id,
@@ -114,149 +137,116 @@ struct HTMLConverter: SwiftMarkdown.MarkupVisitor {
                             timestamp: timestamp
                         )
                     )
-                    let _ = self.currentSection = nil
+                    self.currentSection = nil
                 }
+                return HTML.AnyView { timestamp }
             }
+            return HTML.AnyView { HTML.Empty() }
+        }
 
-        case "Video":
-            Video() {
-                Source(src: value(forArgument: "source", block: blockDirective).map(Src.init))
-            }
-            .attribute("poster", value(forArgument: "poster", block: blockDirective))
-            .attribute("controls")
-            .attribute("playsinline")
-            .css
-            .objectFit(.cover)
-            .marginBottom(MarginBottom.rem(1))
-
-        default:
+        // Build children HTML
+        var mutableSelf = self
+        let childrenHTML = HTML.AnyView {
             for child in blockDirective.children {
-                visit(child)
+                mutableSelf.visit(child)
             }
+        }
+        self = mutableSelf
+
+        let directive = Markdown.HTML.Configuration.Directives.Directive(
+            name: blockDirective.name,
+            rawArguments: blockDirective.argumentText.segments.map(\.trimmedText).joined(separator: " "),
+            arguments: parseArguments(from: blockDirective),
+            children: childrenHTML
+        )
+
+        let result = configuration.directives.handler(directive)
+
+        switch result {
+        case .rendered(let view):
+            return view
+        case .suppress:
+            return HTML.AnyView { HTML.Empty() }
+        case .useDefault:
+            return childrenHTML
         }
     }
 
     @HTML.Builder
     mutating func visitBlockQuote(_ blockQuote: SwiftMarkdown.BlockQuote) -> HTML.AnyView {
         let aside = SwiftMarkdown.Aside(blockQuote)
-        if let level = Diagnostic.Level(aside: aside) {
-            Diagnostic(level: level) {
-                for child in aside.content {
-                    visit(child)
-                }
-            }
-            .css
-            .paddingLeft(PaddingLeft.rem(1))
-            .paddingRight(PaddingRight.rem(1))
-        } else {
-            let style = BlockQuote.Style(blockName: aside.kind.displayName)
-            BlockQuote() {
-                VStack(spacing: .rem(0.5)) {
-                    StrongImportance() {
-                        HTML.Text(aside.kind.displayName)
-                    }
-                    .css
-                    .color(style.borderColor)
+        let kind = aside.kind.displayName
 
-                    for child in aside.content {
-                        visit(child)
-                    }
-                }
+        // Check for diagnostic level
+        let diagnosticLevel = configuration.style.diagnostic.level(aside.kind.rawValue)
+
+        let childrenHTML = HTML.AnyView {
+            for child in aside.content {
+                visit(child)
             }
-            .css
-            .color(HTMLColor.offBlack)
-            .backgroundColor(style.backgroundColor)
-            .border(width: .px(2), style: .solid, color: style.borderColor)
-            .borderRadius(BorderRadius.uniform(.px(6)))
-            .margin(Margin.sides(vertical: .rem(0.5), horizontal: .zero))
-            .padding(Padding.sides(vertical: .rem(1), horizontal: .rem(1.5)))
         }
+
+        configuration.elements.blockQuote.render(
+            .init(
+                kind: kind,
+                children: childrenHTML,
+                isDiagnostic: diagnosticLevel != nil,
+                diagnosticLevel: diagnosticLevel
+            )
+        )
     }
 
-    @HTML.Builder
     mutating func visitCodeBlock(_ codeBlock: SwiftMarkdown.CodeBlock) -> HTML.AnyView {
-        let language: (class: String, dataLine: String?)? = codeBlock.language.map {
-            let languageInfo = $0.split(separator: ":", maxSplits: 2)
-            let language = languageInfo[0]
-            let dataLine = languageInfo.dropFirst().first
-            let highlightColor = languageInfo.dropFirst(2).first
-            return (
-                class: "language-\(language)\(highlightColor.map { " highlight-\($0)" } ?? "")",
-                dataLine: dataLine.map { String($0) }
+        let languageInfo: (language: String?, highlightLines: String?)
+        if let lang = codeBlock.language {
+            let parts = lang.split(separator: ":", maxSplits: 2)
+            languageInfo = (
+                language: parts.first.map(String.init),
+                highlightLines: parts.dropFirst().first.map(String.init)
             )
+        } else {
+            languageInfo = (nil, nil)
         }
-        PreformattedText() {
-            Code() {
-                HTML.Text(codeBlock.code)
-            }
-            .attribute("class", language?.class)
-            //            .linkUnderline(true)
-        }
-        .attribute("data-line", language?.dataLine)
-        //        .backgroundColor(.offWhite.withDarkColor(.offBlack))
-        .css
-        .color(HTMLColor.text.primary)
-        .margin(Margin.zero)
-        .marginBottom(MarginBottom.rem(0.5))
-        .overflowX(OverflowX.auto)
-        .padding(Padding.sides(vertical: .rem(1), horizontal: .rem(1.5)))
-        .borderRadius(BorderRadius.px(6))
+
+        return configuration.elements.codeBlock.render(
+            .init(
+                language: languageInfo.language,
+                code: codeBlock.code,
+                highlightLines: languageInfo.highlightLines
+            )
+        )
     }
 
     @HTML.Builder
     mutating func visitEmphasis(_ emphasis: SwiftMarkdown.Emphasis) -> HTML.AnyView {
-        Emphasis() {
+        let childrenHTML = HTML.AnyView {
             for child in emphasis.children {
                 visit(child)
             }
         }
+        configuration.elements.emphasis.render(.init(children: childrenHTML))
     }
 
     @HTML.Builder
     mutating func visitHeading(_ heading: SwiftMarkdown.Heading) -> HTML.AnyView {
-        let id = ids.slug(for: heading.plainText)
+        let slug = generateSlug(for: heading.plainText)
 
-        Anchor() {}
-            .id(id)
-            .css
-            .display(.block)
-            .position(.relative)
-            .top(Top.em(-5))
-            .desktop { $0.top(Top.em(-0.5)) }
-            .visibility(.hidden)
-
-        ContentDivision() {
-            tag("h\(heading.level)") {
-                for child in heading.children {
-                    visit(child)
-                }
-
-                Anchor(href: .init(value: "#\(id)")) {
-                    LinkIcon()
-                }
-                .css
-                .color(.branding.accent)
-                .display(Display.none)
-                .selector("article div:hover > * >") { $0.display(.initial) }
-                .left(Left.zero)
-                .position(.absolute)
-                .mobile { $0.top(Top.px(2)) }
-                .width(Width.rem(2.5))
-
+        let childrenHTML = HTML.AnyView {
+            for child in heading.children {
+                visit(child)
             }
-            .css
-            .color(DarkModeColor.offBlack.withDarkColor(.offWhite))
         }
-        .css
-        .marginLeft(MarginLeft.rem(-2.25))
-        .paddingLeft(PaddingLeft.rem(2.25))
-        .desktop {
-            $0.marginLeft(MarginLeft.rem(-2.5))
-              .paddingLeft(PaddingLeft.rem(2.5))
-        }
-        .position(.relative)
 
-        let _ = currentSection = (title: heading.plainText, id: id, level: heading.level)
+        let _ = currentSection = (title: heading.plainText, id: slug, level: heading.level)
+
+        configuration.elements.heading.render(
+            .init(
+                level: heading.level,
+                slug: slug,
+                plainText: heading.plainText,
+                children: childrenHTML
+            )
+        )
     }
 
     @HTML.Builder
@@ -266,29 +256,18 @@ struct HTMLConverter: SwiftMarkdown.MarkupVisitor {
 
     @HTML.Builder
     mutating func visitImage(_ image: SwiftMarkdown.Image) -> HTML.AnyView {
-        if let source = image.source {
-            VStack(alignment: .center) {
-                Anchor(href: .init(value: source)) {
-                    Image(
-                        src: .init(value: source),
-                        alt: .init(value: image.title ?? "")
-                    )
-                    .css
-                    .marginTop(MarginTop.zero)
-                    .marginBottom(MarginBottom.zero)
-                    .marginLeft(MarginLeft.rem(1))
-                    .marginRight(MarginRight.rem(1))
-                    .borderRadius(BorderRadius.uniform(.px(6)))
-                }
-            }
-        }
+        configuration.elements.image.render(
+            .init(
+                source: image.source,
+                alt: image.plainText,
+                title: image.title
+            )
+        )
     }
 
     @HTML.Builder
     mutating func visitInlineCode(_ inlineCode: SwiftMarkdown.InlineCode) -> HTML.AnyView {
-        Code() {
-            HTML.Text(inlineCode.code)
-        }
+        configuration.elements.inlineCode.render(.init(code: inlineCode.code))
     }
 
     @HTML.Builder
@@ -298,112 +277,110 @@ struct HTMLConverter: SwiftMarkdown.MarkupVisitor {
 
     @HTML.Builder
     mutating func visitLineBreak(_ lineBreak: SwiftMarkdown.LineBreak) -> HTML.AnyView {
-        BR()
+        configuration.elements.lineBreak.render()
     }
 
     @HTML.Builder
     mutating func visitLink(_ link: SwiftMarkdown.Link) -> HTML.AnyView {
-        Anchor(href: .init(link.destination ?? "#")) {
+        let childrenHTML = HTML.AnyView {
             for child in link.children {
                 visit(child)
             }
         }
-        .attribute(Title.tag, link.title)
+        configuration.elements.link.render(
+            .init(
+                destination: link.destination,
+                title: link.title,
+                children: childrenHTML
+            )
+        )
     }
 
     @HTML.Builder
     mutating func visitListItem(_ listItem: SwiftMarkdown.ListItem) -> HTML.AnyView {
-        ListItem() {
-            VStack(spacing: .rem(0.5)) {
-                for child in listItem.children {
-                    visit(child)
-                }
+        let childrenHTML = HTML.AnyView {
+            for child in listItem.children {
+                visit(child)
             }
         }
+        configuration.elements.listItem.render(.init(children: childrenHTML))
     }
 
     @HTML.Builder
     mutating func visitOrderedList(_ orderedList: SwiftMarkdown.OrderedList) -> HTML.AnyView {
-        OrderedList() {
+        let childrenHTML = HTML.AnyView {
             for child in orderedList.children {
                 visit(child)
             }
         }
-        .css
-        .display(Display.flex)
-        .flexDirection(FlexDirection.column)
-        .rowGap(RowGap.length(.rem(0.5)))
+        configuration.elements.orderedList.render(.init(isOrdered: true, children: childrenHTML))
     }
 
     @HTML.Builder
     mutating func visitParagraph(_ paragraph: SwiftMarkdown.Paragraph) -> HTML.AnyView {
-        Paragraph() {
+        let childrenHTML = HTML.AnyView {
             for child in paragraph.children {
                 visit(child)
             }
         }
-        .css
-        .lineHeight(1.5)
-        .padding(Padding.zero)
-        .margin(Margin.zero)
+        configuration.elements.paragraph.render(.init(children: childrenHTML))
     }
 
     @HTML.Builder
     mutating func visitSoftBreak(_ softBreak: SwiftMarkdown.SoftBreak) -> HTML.AnyView {
-        " "
+        configuration.elements.softBreak.render()
     }
 
     @HTML.Builder
     mutating func visitStrikethrough(_ strikethrough: SwiftMarkdown.Strikethrough) -> HTML.AnyView {
-        Strikethrough() {
+        let childrenHTML = HTML.AnyView {
             for child in strikethrough.children {
                 visit(child)
             }
         }
+        configuration.elements.strikethrough.render(.init(children: childrenHTML))
     }
 
     @HTML.Builder
     mutating func visitStrong(_ strong: SwiftMarkdown.Strong) -> HTML.AnyView {
-        StrongImportance() {
+        let childrenHTML = HTML.AnyView {
             for child in strong.children {
                 visit(child)
             }
         }
+        configuration.elements.strong.render(.init(children: childrenHTML))
     }
 
     @HTML.Builder
     mutating func visitTable(_ table: SwiftMarkdown.Table) -> HTML.AnyView {
-        Table() {
-            if !table.head.isEmpty {
-                TableHead() {
-                    TableRow() {
-                        render(
-                            tagName: "th",
-                            cells: table.head.cells,
-                            columnAlignments: table.columnAlignments
-                        )
-                    }
-                }
-            }
-            if !table.body.isEmpty {
-                TableBody() {
-                    HTMLForEach(table.body.rows) { row in
-                        TableRow() {
-                            render(
-                                tagName: "td",
-                                cells: row.cells,
-                                columnAlignments: table.columnAlignments
-                            )
-                        }
-                    }
-                    //                    for row in table.body.rows {
-                    //                        TableRow() {
-                    //                            render(tag: "td", cells: row.cells, columnAlignments: table.columnAlignments)
-                    //                        }
-                    //                    }
+        let headHTML = HTML.AnyView {
+            render(
+                tagName: "th",
+                cells: table.head.cells,
+                columnAlignments: table.columnAlignments
+            )
+        }
+
+        let bodyHTML = HTML.AnyView {
+            HTMLForEach(table.body.rows) { row in
+                TableRow {
+                    render(
+                        tagName: "td",
+                        cells: row.cells,
+                        columnAlignments: table.columnAlignments
+                    )
                 }
             }
         }
+
+        configuration.elements.table.render(
+            .init(
+                head: headHTML,
+                body: bodyHTML,
+                hasHead: !table.head.isEmpty,
+                hasBody: !table.body.isEmpty
+            )
+        )
     }
 
     @HTML.Builder
@@ -431,38 +408,22 @@ struct HTMLConverter: SwiftMarkdown.MarkupVisitor {
 
     @HTML.Builder
     mutating func visitText(_ text: SwiftMarkdown.Text) -> HTML.AnyView {
-        HTML.Text(text.string)
+        configuration.elements.text.render(.init(text: text.string))
     }
 
     @HTML.Builder
     mutating func visitThematicBreak(_ thematicBreak: SwiftMarkdown.ThematicBreak) -> HTML.AnyView {
-        ContentDivision() {
-            ThematicBreak()
-                .css
-                .borderRight(BorderRight.none)
-                .borderBottom(BorderBottom.none)
-                .borderLeft(BorderLeft.none)
-                .borderTop(.init(width: .px(1), style: .solid, color: .gray500))
-                .margin(Margin.sides(vertical: .zero, horizontal: .percent(30)))
-        }
-        .css
-        .marginTop(MarginTop.rem(1))
-        .marginBottom(MarginBottom.rem(2))
+        configuration.elements.thematicBreak.render()
     }
 
     @HTML.Builder
     mutating func visitUnorderedList(_ unorderedList: SwiftMarkdown.UnorderedList) -> HTML.AnyView {
-        UnorderedList() {
+        let childrenHTML = HTML.AnyView {
             for child in unorderedList.children {
                 visit(child)
             }
         }
-        .css
-        .display(Display.flex)
-        .flexDirection(FlexDirection.column)
-        .rowGap(RowGap.length(.rem(0.5)))
-        .marginTop(MarginTop.zero)
-        .marginBottom(MarginBottom.zero)
+        configuration.elements.unorderedList.render(.init(isOrdered: false, children: childrenHTML))
     }
 }
 
