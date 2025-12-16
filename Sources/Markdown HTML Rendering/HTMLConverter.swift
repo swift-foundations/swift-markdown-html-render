@@ -5,10 +5,10 @@
 //  Created by Coen ten Thije Boonkkamp on 16/12/2025.
 //
 
-import HTML_Rendering
-@_spi(DynamicHTML) public import HTML_Renderable
 import CSS_HTML_Rendering
 import CSS_Theming
+@_spi(DynamicHTML) import HTML_Renderable
+import HTML_Rendering
 
 struct HTMLConverter: SwiftMarkdown.MarkupVisitor {
     typealias Result = HTML.AnyView
@@ -87,7 +87,8 @@ struct HTMLConverter: SwiftMarkdown.MarkupVisitor {
                     remaining = remaining[remaining.index(after: endQuote)...]
                 }
             } else {
-                let endIndex = remaining.firstIndex { $0 == "," || $0.isWhitespace } ?? remaining.endIndex
+                let endIndex =
+                    remaining.firstIndex { $0 == "," || $0.isWhitespace } ?? remaining.endIndex
                 result[key] = String(remaining[..<endIndex])
                 remaining = remaining[endIndex...]
             }
@@ -114,7 +115,9 @@ struct HTMLConverter: SwiftMarkdown.MarkupVisitor {
         }
     }
 
-    mutating func visitBlockDirective(_ blockDirective: SwiftMarkdown.BlockDirective) -> HTML.AnyView {
+    mutating func visitBlockDirective(
+        _ blockDirective: SwiftMarkdown.BlockDirective
+    ) -> HTML.AnyView {
         // First, check if it's a timestamp directive (handled specially)
         if blockDirective.name == "T" {
             let segments = blockDirective.argumentText.segments
@@ -155,7 +158,9 @@ struct HTMLConverter: SwiftMarkdown.MarkupVisitor {
 
         let directive = Markdown.HTML.Configuration.Directives.Directive(
             name: blockDirective.name,
-            rawArguments: blockDirective.argumentText.segments.map(\.trimmedText).joined(separator: " "),
+            rawArguments: blockDirective.argumentText.segments.map(\.trimmedText).joined(
+                separator: " "
+            ),
             arguments: parseArguments(from: blockDirective),
             children: childrenHTML
         )

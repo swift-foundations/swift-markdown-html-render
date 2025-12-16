@@ -6,9 +6,10 @@
 //
 
 import Foundation
-import Testing
-import InlineSnapshotTesting
 import HTML_Rendering_TestSupport
+import InlineSnapshotTesting
+import Testing
+
 @testable import Markdown_HTML_Rendering
 
 @Suite("Markdown.HTML Tests")
@@ -16,7 +17,7 @@ struct MarkdownHTMLTests {
     @Test("Basic markdown rendering")
     func basicMarkdownRendering() {
         let toc = Markdown.HTML.tableOfContents(from: "# Hello World")
-        #expect(toc.count >= 0)
+        #expect(toc.isEmpty)
     }
 }
 
@@ -293,17 +294,19 @@ extension SnapshotTests.MarkdownHTML {
     }
 
     @Test func tableOfContents() {
-        let toc = Markdown.HTML.tableOfContents(from: """
-            # Section 1
-            @T(0:00)
-            Content
-            ## Section 1.1
-            @T(1:00)
-            More content
-            # Section 2
-            @T(2:00)
-            Final content
-            """)
+        let toc = Markdown.HTML.tableOfContents(
+            from: """
+                # Section 1
+                @T(0:00)
+                Content
+                ## Section 1.1
+                @T(1:00)
+                More content
+                # Section 2
+                @T(2:00)
+                Final content
+                """
+        )
         #expect(toc.count == 3)
     }
 }

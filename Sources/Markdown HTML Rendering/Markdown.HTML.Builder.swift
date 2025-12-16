@@ -65,7 +65,6 @@ extension Markdown.HTML {
     }
 }
 
-
 // Enhanced extension with Markdown-specific formatting options
 extension Markdown.HTML.Builder {
     /// Joins components with double newlines for paragraph separation

@@ -5,9 +5,9 @@
 //  Created by Coen ten Thije Boonkkamp on 16/12/2025.
 //
 
-import HTML_Rendering
 import CSS_HTML_Rendering
 import CSS_Theming
+import HTML_Rendering
 
 extension Markdown.HTML {
     /// Configuration for customizing markdown rendering behavior.
@@ -41,9 +41,16 @@ extension Markdown.HTML {
             self.style = style
             self.slugGenerator = slugGenerator
         }
+    }
+}
 
-        public static var `default`: Self {
-            .init()
-        }
+extension Markdown.HTML.Configuration {
+    public static var `default`: Self {
+        .init(
+            elements: .default,
+            directives: .default,
+            style: .default,
+            slugGenerator: .default
+        )
     }
 }

@@ -5,9 +5,9 @@
 //  Created by Coen ten Thije Boonkkamp on 16/12/2025.
 //
 
-import HTML_Rendering
 import CSS_HTML_Rendering
 import CSS_Theming
+import HTML_Rendering
 
 extension Markdown.HTML.Configuration {
     /// Configuration for styling various markdown components.
@@ -69,9 +69,17 @@ extension Markdown.HTML.Configuration.Style {
 extension Markdown.HTML.Configuration.Style {
     /// Configuration for block quote styling.
     public struct BlockQuoteStyle: Sendable {
-        public var style: @Sendable (_ name: String) -> (backgroundColor: DarkModeColor, borderColor: DarkModeColor)
+        public var style:
+            @Sendable (_ name: String) -> (
+                backgroundColor: DarkModeColor, borderColor: DarkModeColor
+            )
 
-        public init(_ style: @escaping @Sendable (_ name: String) -> (backgroundColor: DarkModeColor, borderColor: DarkModeColor)) {
+        public init(
+            _ style:
+                @escaping @Sendable (_ name: String) -> (
+                    backgroundColor: DarkModeColor, borderColor: DarkModeColor
+                )
+        ) {
             self.style = style
         }
 
@@ -81,7 +89,9 @@ extension Markdown.HTML.Configuration.Style {
                 case "Warning", "Correction":
                     return (backgroundColor: .background.warning, borderColor: .border.warning)
                 case "Important":
-                    return (backgroundColor: .background.highlighted, borderColor: .border.highlighted)
+                    return (
+                        backgroundColor: .background.highlighted, borderColor: .border.highlighted
+                    )
                 case "Announcement", "Tip":
                     return (backgroundColor: .background.info, borderColor: .border.info)
                 default:
@@ -91,7 +101,11 @@ extension Markdown.HTML.Configuration.Style {
         }
 
         /// Add a custom style for a specific block quote type.
-        public func adding(_ name: String, backgroundColor: DarkModeColor, borderColor: DarkModeColor) -> Self {
+        public func adding(
+            _ name: String,
+            backgroundColor: DarkModeColor,
+            borderColor: DarkModeColor
+        ) -> Self {
             BlockQuoteStyle { n in
                 if n == name { return (backgroundColor: backgroundColor, borderColor: borderColor) }
                 return self.style(n)

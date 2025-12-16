@@ -1,11 +1,11 @@
-public import HTML_Rendering
 import CSS_HTML_Rendering
 import CSS_Theming
 import Dependencies
+public import HTML_Rendering
 
 public struct Diagnostic {
     let level: Diagnostic.Level
-    
+
     public init(level: Diagnostic.Level) {
         self.level = level
     }
@@ -13,12 +13,12 @@ public struct Diagnostic {
 
 extension Diagnostic {
     public func callAsFunction<Message: HTML.View>(
-    @HTML.Builder _ message: () -> Message
+        @HTML.Builder _ message: () -> Message
     ) -> some HTML.View {
-        ContentDivision() {
+        ContentDivision {
             HStack(spacing: 0) {
-                ContentDivision() {
-                    ContentDivision() {
+                ContentDivision {
+                    ContentDivision {
                         self.level.icon
                     }
                     .css
@@ -37,8 +37,8 @@ extension Diagnostic {
                 .color(self.level.iconColor)
                 .backgroundColor(self.level.backgroundColor)
                 .padding(Padding.sides(top: .px(8), right: .px(8), bottom: .px(7), left: .px(8)))
-                
-                ContentDivision() {
+
+                ContentDivision {
                     VStack(spacing: 0.5.rem) {
                         message()
                     }

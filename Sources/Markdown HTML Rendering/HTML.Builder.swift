@@ -15,6 +15,6 @@ extension HTML.Builder {
 
     @_disfavoredOverload
     static func buildFinalResult(_ component: some HTML.View) -> HTML.AnyView {
-        AnyHTML{component}
+        AnyHTML { component }
     }
 }

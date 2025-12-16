@@ -1,7 +1,7 @@
-import HTML_Rendering
-@_spi(DynamicHTML) public import HTML_Renderable
 import CSS_HTML_Rendering
 import CSS_Theming
+@_spi(DynamicHTML) public import HTML_Renderable
+import HTML_Rendering
 
 public enum Markdown {}
 
@@ -26,7 +26,9 @@ extension Markdown.HTML {
     ) -> some HTML_Renderable.HTML.View {
         let markdownString = markdown()
         var converter = HTMLConverter(configuration: configuration, previewOnly: previewOnly)
-        let content = converter.visit(SwiftMarkdown.Document(parsing: markdownString, options: .parseBlockDirectives))
+        let content = converter.visit(
+            SwiftMarkdown.Document(parsing: markdownString, options: .parseBlockDirectives)
+        )
 
         return ContentDivision {
             VStack(spacing: .rem(0.5)) {
@@ -47,7 +49,9 @@ extension Markdown.HTML {
         configuration: Configuration = .default
     ) -> [Section] {
         var converter = HTMLConverter(configuration: configuration, previewOnly: false)
-        _ = converter.visit(SwiftMarkdown.Document(parsing: markdown, options: .parseBlockDirectives))
+        _ = converter.visit(
+            SwiftMarkdown.Document(parsing: markdown, options: .parseBlockDirectives)
+        )
         return converter.tableOfContents
     }
 }

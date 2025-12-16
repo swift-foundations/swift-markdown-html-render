@@ -40,9 +40,9 @@ public struct Timestamp: HTML.View {
     }
 
     public var body: some HTML.View {
-        ContentDivision() {
+        ContentDivision {
             if let speaker {
-                StrongImportance() {
+                StrongImportance {
                     HTML.Text(speaker)
                 }
                 .css
@@ -51,14 +51,14 @@ public struct Timestamp: HTML.View {
                 .inlineStyle("text-transform", "uppercase")
                 .desktop {
                     $0.lineHeight(1)
-                      .position(.relative)
-                      .top(Top.rem(0.5))
+                        .position(.relative)
+                        .top(Top.rem(0.5))
                 }
             }
 
             let duration = self.duration
-            ContentDivision() {
-                ContentDivision() {
+            ContentDivision {
+                ContentDivision {
                     Anchor(href: .init(value: anchor)) {
                         HTML.Text(formatted())
                     }
@@ -73,18 +73,18 @@ public struct Timestamp: HTML.View {
                 .inlineStyle("font-variant-numeric", "tabular-nums")
                 .desktop {
                     $0.marginLeft(MarginLeft.rem(-4))
-                      .lineHeight(3)
-                      .position(.absolute)
-                      .textAlign(.right)
-                      .width(Width.rem(3.25))
+                        .lineHeight(3)
+                        .position(.absolute)
+                        .textAlign(.right)
+                        .width(Width.rem(3.25))
                 }
             }
         }
         .css
         .mobile {
             $0.display(Display.flex)
-              .flexDirection(FlexDirection.columnReverse)
-              .rowGap(RowGap.length(.rem(0.5)))
+                .flexDirection(FlexDirection.columnReverse)
+                .rowGap(RowGap.length(.rem(0.5)))
         }
     }
 }

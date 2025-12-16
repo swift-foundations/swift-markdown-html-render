@@ -6,9 +6,10 @@
 //
 
 import Foundation
-import Testing
-import InlineSnapshotTesting
 import HTML_Rendering_TestSupport
+import InlineSnapshotTesting
+import Testing
+
 @testable import Markdown_HTML_Rendering
 
 extension SnapshotTests.Timestamp {

@@ -5,8 +5,8 @@
 //  Created by Coen ten Thije Boonkkamp on 16/12/2025.
 //
 
-import SwiftMarkdown
 import CSS_Theming
+import SwiftMarkdown
 
 extension SwiftMarkdown.BlockQuote {
     struct Style {
@@ -31,5 +31,3 @@ extension SwiftMarkdown.BlockQuote {
         }
     }
 }
-
-

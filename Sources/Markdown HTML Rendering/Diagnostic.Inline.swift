@@ -5,10 +5,10 @@
 //  Created by Coen ten Thije Boonkkamp on 16/12/2025.
 //
 
-public import HTML_Rendering
-public import CSS_HTML_Rendering
-public import CSS_Theming
-public import Dependencies
+import CSS_HTML_Rendering
+import CSS_Theming
+import Dependencies
+import HTML_Rendering
 
 extension Diagnostic {
     public struct Inline: HTML.View {
@@ -18,8 +18,8 @@ extension Diagnostic {
         public var body: some HTML.View {
             VStack(alignment: .normal) {
                 HStack(spacing: 0.05.rem) {
-                    ContentDivision() {
-                        ContentDivision() {
+                    ContentDivision {
+                        ContentDivision {
                             level.icon
                         }
                         .css
@@ -37,9 +37,11 @@ extension Diagnostic {
                     .css
                     .color(level.iconColor)
                     .backgroundColor(level.backgroundColor)
-                    .padding(Padding.sides(top: .px(4), right: .px(10), bottom: .px(3), left: .px(10)))
+                    .padding(
+                        Padding.sides(top: .px(4), right: .px(10), bottom: .px(3), left: .px(10))
+                    )
 
-                    ContentDivision() {
+                    ContentDivision {
                         HTML.Text(message)
                     }
                     .css
@@ -52,7 +54,9 @@ extension Diagnostic {
                     .flexGrow(1)
                     .flexShrink(1)
                     .flexBasis(FlexBasis.auto)
-                    .padding(Padding.sides(top: .px(3), right: .px(30), bottom: .px(3), left: .px(8)))
+                    .padding(
+                        Padding.sides(top: .px(3), right: .px(30), bottom: .px(3), left: .px(8))
+                    )
                     .inlineStyle("text-overflow", "ellipsis")
                     .overflow(Overflow.hidden)
                     .inlineStyle("white-space", "nowrap")
@@ -64,5 +68,3 @@ extension Diagnostic {
         }
     }
 }
-
-

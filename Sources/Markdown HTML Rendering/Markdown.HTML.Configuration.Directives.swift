@@ -5,9 +5,9 @@
 //  Created by Coen ten Thije Boonkkamp on 16/12/2025.
 //
 
-import HTML_Rendering
 import CSS_HTML_Rendering
 import CSS_Theming
+import HTML_Rendering
 
 extension Markdown.HTML.Configuration {
     /// Configuration for handling block directives in markdown.
@@ -29,9 +29,14 @@ extension Markdown.HTML.Configuration {
     /// }
     /// ```
     public struct Directives: Sendable {
-        public var handler: @Sendable (Directive) -> Markdown.HTML.Configuration.Directives.Directive.Result
-        
-        public init(_ handler: @escaping @Sendable (Directive) -> Markdown.HTML.Configuration.Directives.Directive.Result) {
+        public var handler:
+            @Sendable (Directive) -> Markdown.HTML.Configuration.Directives.Directive.Result
+
+        public init(
+            _ handler:
+                @escaping @Sendable (Directive) ->
+                Markdown.HTML.Configuration.Directives.Directive.Result
+        ) {
             self.handler = handler
         }
     }
@@ -42,7 +47,8 @@ extension Markdown.HTML.Configuration.Directives {
         .init { directive in
             switch directive.name {
             case "Button":
-                    .rendered(HTML.AnyView {
+                .rendered(
+                    HTML.AnyView {
                         VStack(alignment: .center) {
                             Anchor(href: .init(directive.rawArguments)) {
                                 directive.children
@@ -50,13 +56,15 @@ extension Markdown.HTML.Configuration.Directives {
                             .css
                             .margin(Margin.sides(vertical: .rem(0.5), horizontal: .zero))
                         }
-                    })
-                
+                    }
+                )
+
             case "Comment":
-                    .suppress
-                
+                .suppress
+
             case "Video":
-                    .rendered(HTML.AnyView {
+                .rendered(
+                    HTML.AnyView {
                         Video {
                             Source(src: directive.arguments["source"].map(Src.init))
                         }
@@ -66,14 +74,15 @@ extension Markdown.HTML.Configuration.Directives {
                         .css
                         .objectFit(.cover)
                         .marginBottom(MarginBottom.rem(1))
-                    })
-                
+                    }
+                )
+
             default:
-                    .useDefault
+                .useDefault
             }
         }
     }
-    
+
     /// Combine multiple directive handlers.
     /// The first handler that doesn't return `.useDefault` wins.
     public func adding(_ other: Markdown.HTML.Configuration.Directives) -> Self {
@@ -88,7 +97,6 @@ extension Markdown.HTML.Configuration.Directives {
     }
 }
 
-
 extension Markdown.HTML.Configuration.Directives {
     /// Input for a block directive.
     public struct Directive: Sendable {
@@ -96,8 +104,13 @@ extension Markdown.HTML.Configuration.Directives {
         public let rawArguments: String
         public let arguments: [String: String]
         public let children: HTML.AnyView
-        
-        public init(name: String, rawArguments: String, arguments: [String: String], children: HTML.AnyView) {
+
+        public init(
+            name: String,
+            rawArguments: String,
+            arguments: [String: String],
+            children: HTML.AnyView
+        ) {
             self.name = name
             self.rawArguments = rawArguments
             self.arguments = arguments

@@ -5,13 +5,13 @@
 //  Created by Coen ten Thije Boonkkamp on 16/12/2025.
 //
 
-import HTML_Rendering
 import CSS_HTML_Rendering
 import CSS_Theming
 import Dependencies
+import HTML_Rendering
 
 extension Diagnostic {
-    
+
     public struct Level: Sendable {
         var icon: Diagnostic.Icon
         var iconColor: DarkModeColor
