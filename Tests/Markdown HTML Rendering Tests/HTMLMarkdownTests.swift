@@ -7,7 +7,7 @@
 
 import Foundation
 import Testing
-@testable import HTMLMarkdown
+@testable import Markdown_HTML_Rendering
 
 @Suite("HTMLMarkdown Tests")
 struct HTMLMarkdownTests {

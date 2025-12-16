@@ -3,34 +3,36 @@
 import PackageDescription
 
 extension String {
-    static let htmlMarkdown: Self = "HTMLMarkdown"
+    static let markdownHTMLRendering: Self = "Markdown HTML Rendering"
 }
 
 extension Target.Dependency {
-    static var html: Self { .product(name: "HTML", package: "swift-html") }
-    static var htmlTheme: Self { .product(name: "HTMLTheme", package: "swift-html") }
+    static var htmlRendering: Self { .product(name: "HTML Rendering", package: "swift-html-rendering") }
+    static var cssHTMLRendering: Self { .product(name: "CSS HTML Rendering", package: "swift-css-html-rendering") }
+    static var cssTheming: Self { .product(name: "CSS Theming", package: "swift-css") }
     static var swiftMarkdown: Self { .product(name: "Markdown", package: "swift-markdown") }
     static var markdownBuilder: Self { .product(name: "MarkdownBuilder", package: "swift-builders") }
     static var dependencies: Self { .product(name: "Dependencies", package: "swift-dependencies") }
     static var orderedCollections: Self { .product(name: "OrderedCollections", package: "swift-collections") }
-    static var htmlRenderableTestSupport: Self { .product(name: "HTML Renderable TestSupport", package: "swift-html-rendering") }
+    static var htmlRenderableTestSupport: Self { .product(name: "HTML Rendering TestSupport", package: "swift-html-rendering") }
 }
 
 let package = Package(
-    name: "swift-html-markdown",
+    name: "swift-markdown-html-rendering",
     platforms: [
-        .iOS(.v18),
-        .macOS(.v15),
-        .tvOS(.v18),
-        .watchOS(.v11),
-        .macCatalyst(.v18)
+        .iOS(.v26),
+        .macOS(.v26),
+        .tvOS(.v26),
+        .watchOS(.v26),
+        .macCatalyst(.v26)
     ],
     products: [
-        .library(name: .htmlMarkdown, targets: [.htmlMarkdown])
+        .library(name: .markdownHTMLRendering, targets: [.markdownHTMLRendering])
     ],
     dependencies: [
-        .package(url: "https://github.com/coenttb/swift-html.git", from: "0.1.0"),
-        .package(url: "https://github.com/coenttb/swift-html-rendering.git", from: "0.1.0"),
+        .package(path: "../swift-html-rendering"),
+        .package(path: "../swift-css-html-rendering"),
+        .package(path: "../swift-css"),
         .package(url: "https://github.com/swiftlang/swift-markdown", from: "0.4.0"),
         .package(url: "https://github.com/coenttb/swift-builders", from: "0.0.1"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.9.2"),
@@ -38,10 +40,11 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: .htmlMarkdown,
+            name: .markdownHTMLRendering,
             dependencies: [
-                .html,
-                .htmlTheme,
+                .htmlRendering,
+                .cssHTMLRendering,
+                .cssTheming,
                 .swiftMarkdown,
                 .markdownBuilder,
                 .dependencies,
@@ -49,9 +52,9 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: .htmlMarkdown.tests,
+            name: .markdownHTMLRendering.tests,
             dependencies: [
-                .target(name: .htmlMarkdown),
+                .target(name: .markdownHTMLRendering),
                 .htmlRenderableTestSupport
             ]
         )

@@ -1,6 +1,17 @@
-import HTML
-import HTMLTheme
-import Markdown
+public import HTML_Rendering
+@_spi(DynamicHTML) public import HTML_Renderable
+public import CSS_HTML_Rendering
+public import CSS_Theming
+public import Markdown
+
+// Inline SVG for heading links
+private struct LinkIcon: HTML.View, Sendable {
+    var body: some HTML.View {
+        HTML.Raw("""
+            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M432-288H288q-79.68 0-135.84-56.23Q96-400.45 96-480.23 96-560 152.16-616q56.16-56 135.84-56h144v72H288q-50 0-85 35t-35 85q0 50 35 85t85 35h144v72Zm-96-156v-72h288v72H336Zm192 156v-72h144q50 0 85-35t35-85q0-50-35-85t-85-35H528v-72h144q79.68 0 135.84 56.23 56.16 56.22 56.16 136Q864-400 807.84-344 751.68-288 672-288H528Z"/></svg>
+            """)
+    }
+}
 
 public struct HTMLMarkdown: HTML.View {
     public struct Section {
@@ -35,15 +46,17 @@ public struct HTMLMarkdown: HTML.View {
     }
 
     public var body: some HTML.View {
-        tag("swift-html-markdown") {
+        ContentDivision() {
             VStack(spacing: .rem(0.5)) {
                 content
             }
+            .css
             .inlineStyle(
                 "mask-image",
                 previewOnly ? "linear-gradient(to bottom,black 50%,transparent 100%)" : nil
             )
         }
+        .css
         .display(.block)
     }
 }
@@ -77,7 +90,7 @@ private struct HTMLConverter: MarkupVisitor {
         switch blockDirective.name {
         case "Button":
             VStack(alignment: .center) {
-                a(
+                Anchor(
                     href: .init(
                         blockDirective.argumentText.segments.map(\.trimmedText).joined(
                             separator: " "
@@ -88,7 +101,8 @@ private struct HTMLConverter: MarkupVisitor {
                         visit(child)
                     }
                 }
-                .margin(vertical: .rem(0.5), horizontal: 0)
+                .css
+                .margin(Margin.sides(vertical: .rem(0.5), horizontal: .zero))
             }
 
         case "Comment":
@@ -121,15 +135,15 @@ private struct HTMLConverter: MarkupVisitor {
             }
 
         case "Video":
-            video {
-                tag("source")
-                    .attribute("src", value(forArgument: "source", block: blockDirective))
+            Video() {
+                Source(src: value(forArgument: "source", block: blockDirective).map(Src.init))
             }
             .attribute("poster", value(forArgument: "poster", block: blockDirective))
             .attribute("controls")
             .attribute("playsinline")
+            .css
             .objectFit(.cover)
-            .margin(bottom: .rem(1))
+            .marginBottom(MarginBottom.rem(1))
 
         default:
             for child in blockDirective.children {
@@ -147,14 +161,17 @@ private struct HTMLConverter: MarkupVisitor {
                     visit(child)
                 }
             }
-            .padding(vertical: nil, horizontal: .rem(1))
+            .css
+            .paddingLeft(PaddingLeft.rem(1))
+            .paddingRight(PaddingRight.rem(1))
         } else {
             let style = BlockQuoteStyle(blockName: aside.kind.displayName)
-            blockquote {
+            BlockQuote() {
                 VStack(spacing: .rem(0.5)) {
-                    strong {
+                    StrongImportance() {
                         HTML.Text(aside.kind.displayName)
                     }
+                    .css
                     .color(style.borderColor)
 
                     for child in aside.content {
@@ -162,12 +179,13 @@ private struct HTMLConverter: MarkupVisitor {
                     }
                 }
             }
-            .color(CSS_Standard.Color.Value.offBlack.withDarkColor(.offWhite))
+            .css
+            .color(HTMLColor.offBlack)
             .backgroundColor(style.backgroundColor)
             .border(width: .px(2), style: .solid, color: style.borderColor)
-            .borderRadius(.uniform(.px(6)))
-            .margin(vertical: .rem(0.5), horizontal: 0)
-            .padding(vertical: .rem(1), horizontal: .rem(1.5))
+            .borderRadius(BorderRadius.uniform(.px(6)))
+            .margin(Margin.sides(vertical: .rem(0.5), horizontal: .zero))
+            .padding(Padding.sides(vertical: .rem(1), horizontal: .rem(1.5)))
         }
     }
 
@@ -183,8 +201,8 @@ private struct HTMLConverter: MarkupVisitor {
                 dataLine: dataLine.map { String($0) }
             )
         }
-        pre {
-            code {
+        PreformattedText() {
+            Code() {
                 HTML.Text(codeBlock.code)
             }
             .attribute("class", language?.class)
@@ -192,17 +210,18 @@ private struct HTMLConverter: MarkupVisitor {
         }
         .attribute("data-line", language?.dataLine)
         //        .backgroundColor(.offWhite.withDarkColor(.offBlack))
-        .color(light: .black, dark: .gray900)
-        .margin(0)
-        .margin(bottom: .rem(0.5))
-        .overflowX(.auto)
-        .padding(vertical: .rem(1), horizontal: .rem(1.5))
-        .borderRadius(.px(6))
+        .css
+        .color(HTMLColor.text.primary)
+        .margin(Margin.zero)
+        .marginBottom(MarginBottom.rem(0.5))
+        .overflowX(OverflowX.auto)
+        .padding(Padding.sides(vertical: .rem(1), horizontal: .rem(1.5)))
+        .borderRadius(BorderRadius.px(6))
     }
 
     @HTML.Builder
     mutating func visitEmphasis(_ emphasis: Markdown.Emphasis) -> HTML.AnyView {
-        em {
+        Emphasis() {
             for child in emphasis.children {
                 visit(child)
             }
@@ -213,42 +232,44 @@ private struct HTMLConverter: MarkupVisitor {
     mutating func visitHeading(_ heading: Markdown.Heading) -> HTML.AnyView {
         let id = ids.slug(for: heading.plainText)
 
-        a {}
+        Anchor() {}
             .id(id)
+            .css
             .display(.block)
             .position(.relative)
-            .top(.em(-5))
-            .top(.em(-0.5), media: .desktop)
+            .top(Top.em(-5))
+            .desktop { $0.top(Top.em(-0.5)) }
             .visibility(.hidden)
 
-        div {
+        ContentDivision() {
             tag("h\(heading.level)") {
                 for child in heading.children {
                     visit(child)
                 }
 
-                a(href: .init(value: "#\(id)")) {
-                    LegacySVG("Link") {
-                        """
-                        <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M432-288H288q-79.68 0-135.84-56.23Q96-400.45 96-480.23 96-560 152.16-616q56.16-56 135.84-56h144v72H288q-50 0-85 35t-35 85q0 50 35 85t85 35h144v72Zm-96-156v-72h288v72H336Zm192 156v-72h144q50 0 85-35t35-85q0-50-35-85t-85-35H528v-72h144q79.68 0 135.84 56.23 56.16 56.22 56.16 136Q864-400 807.84-344 751.68-288 672-288H528Z"/></svg>
-                        """
-                    }
+                Anchor(href: .init(value: "#\(id)")) {
+                    LinkIcon()
                 }
+                .css
                 .color(.branding.accent)
                 .display(Display.none)
-                .display(.initial, selector: "article div:hover > * >")
-                .left(0)
+                .selector("article div:hover > * >") { $0.display(.initial) }
+                .left(Left.zero)
                 .position(.absolute)
-                .top(.px(2), media: .mobile)
-                .width(.rem(2.5))
+                .mobile { $0.top(Top.px(2)) }
+                .width(Width.rem(2.5))
 
             }
-            .color(.offBlack.withDarkColor(.offWhite))
+            .css
+            .color(DarkModeColor.offBlack.withDarkColor(.offWhite))
         }
-        .margin(left: .rem(-2.25))
-        .margin(left: .rem(-2.5), media: .desktop)
-        .padding(left: .rem(2.25))
-        .padding(left: .rem(2.5), media: .desktop)
+        .css
+        .marginLeft(MarginLeft.rem(-2.25))
+        .paddingLeft(PaddingLeft.rem(2.25))
+        .desktop {
+            $0.marginLeft(MarginLeft.rem(-2.5))
+              .paddingLeft(PaddingLeft.rem(2.5))
+        }
         .position(.relative)
 
         let _ = currentSection = (title: heading.plainText, id: id, level: heading.level)
@@ -263,17 +284,17 @@ private struct HTMLConverter: MarkupVisitor {
     mutating func visitImage(_ image: Markdown.Image) -> HTML.AnyView {
         if let source = image.source {
             VStack(alignment: .center) {
-                a(href: .init(value: source)) {
+                Anchor(href: .init(value: source)) {
                     Image(
                         src: .init(value: source),
-                        alt: .init(value: image.title ?? ""),
-                        loading: nil
+                        alt: .init(value: image.title ?? "")
                     )
-                    .margin(
-                        vertical: .rem(0),
-                        horizontal: .rem(1)
-                    )
-                    .borderRadius(.uniform(.px(6)))
+                    .css
+                    .marginTop(MarginTop.zero)
+                    .marginBottom(MarginBottom.zero)
+                    .marginLeft(MarginLeft.rem(1))
+                    .marginRight(MarginRight.rem(1))
+                    .borderRadius(BorderRadius.uniform(.px(6)))
                 }
             }
         }
@@ -281,7 +302,7 @@ private struct HTMLConverter: MarkupVisitor {
 
     @HTML.Builder
     mutating func visitInlineCode(_ inlineCode: Markdown.InlineCode) -> HTML.AnyView {
-        code {
+        Code() {
             HTML.Text(inlineCode.code)
         }
     }
@@ -293,12 +314,12 @@ private struct HTMLConverter: MarkupVisitor {
 
     @HTML.Builder
     mutating func visitLineBreak(_ lineBreak: Markdown.LineBreak) -> HTML.AnyView {
-        br()
+        BR()
     }
 
     @HTML.Builder
     mutating func visitLink(_ link: Markdown.Link) -> HTML.AnyView {
-        a(href: .init(link.destination ?? "#")) {
+        Anchor(href: .init(link.destination ?? "#")) {
             for child in link.children {
                 visit(child)
             }
@@ -308,7 +329,7 @@ private struct HTMLConverter: MarkupVisitor {
 
     @HTML.Builder
     mutating func visitListItem(_ listItem: Markdown.ListItem) -> HTML.AnyView {
-        li {
+        ListItem() {
             VStack(spacing: .rem(0.5)) {
                 for child in listItem.children {
                     visit(child)
@@ -319,27 +340,28 @@ private struct HTMLConverter: MarkupVisitor {
 
     @HTML.Builder
     mutating func visitOrderedList(_ orderedList: Markdown.OrderedList) -> HTML.AnyView {
-        ol {
+        OrderedList() {
             for child in orderedList.children {
                 visit(child)
             }
         }
-        .flexContainer(
-            direction: .column,
-            rowGap: .rem(0.5)
-        )
+        .css
+        .display(Display.flex)
+        .flexDirection(FlexDirection.column)
+        .rowGap(RowGap.length(.rem(0.5)))
     }
 
     @HTML.Builder
     mutating func visitParagraph(_ paragraph: Markdown.Paragraph) -> HTML.AnyView {
-        p {
+        Paragraph() {
             for child in paragraph.children {
                 visit(child)
             }
         }
+        .css
         .lineHeight(1.5)
-        .padding(0)
-        .margin(0)
+        .padding(Padding.zero)
+        .margin(Margin.zero)
     }
 
     @HTML.Builder
@@ -349,7 +371,7 @@ private struct HTMLConverter: MarkupVisitor {
 
     @HTML.Builder
     mutating func visitStrikethrough(_ strikethrough: Markdown.Strikethrough) -> HTML.AnyView {
-        s {
+        Strikethrough() {
             for child in strikethrough.children {
                 visit(child)
             }
@@ -358,7 +380,7 @@ private struct HTMLConverter: MarkupVisitor {
 
     @HTML.Builder
     mutating func visitStrong(_ strong: Markdown.Strong) -> HTML.AnyView {
-        tag("strong") {
+        StrongImportance() {
             for child in strong.children {
                 visit(child)
             }
@@ -367,12 +389,12 @@ private struct HTMLConverter: MarkupVisitor {
 
     @HTML.Builder
     mutating func visitTable(_ table: Markdown.Table) -> HTML.AnyView {
-        tag("table") {
+        Table() {
             if !table.head.isEmpty {
-                thead {
-                    tr {
+                TableHead() {
+                    TableRow() {
                         render(
-                            tag: "th",
+                            tagName: "th",
                             cells: table.head.cells,
                             columnAlignments: table.columnAlignments
                         )
@@ -380,18 +402,18 @@ private struct HTMLConverter: MarkupVisitor {
                 }
             }
             if !table.body.isEmpty {
-                tbody {
+                TableBody() {
                     HTMLForEach(table.body.rows) { row in
-                        tr {
+                        TableRow() {
                             render(
-                                tag: "td",
+                                tagName: "td",
                                 cells: row.cells,
                                 columnAlignments: table.columnAlignments
                             )
                         }
                     }
                     //                    for row in table.body.rows {
-                    //                        tr {
+                    //                        TableRow() {
                     //                            render(tag: "td", cells: row.cells, columnAlignments: table.columnAlignments)
                     //                        }
                     //                    }
@@ -402,14 +424,14 @@ private struct HTMLConverter: MarkupVisitor {
 
     @HTML.Builder
     private mutating func render(
-        tag: HTML.Tag,
+        tagName: String,
         cells: some Sequence<Markdown.Table.Cell>,
         columnAlignments: [Markdown.Table.ColumnAlignment?]
     ) -> HTML.AnyView {
         var column = 0
         for cell in cells {
             if cell.colspan > 0 && cell.rowspan > 0 {
-                tag {
+                tag(tagName) {
                     for child in cell.children {
                         visit(child)
                     }
@@ -430,35 +452,33 @@ private struct HTMLConverter: MarkupVisitor {
 
     @HTML.Builder
     mutating func visitThematicBreak(_ thematicBreak: Markdown.ThematicBreak) -> HTML.AnyView {
-        div {
-            hr()()
+        ContentDivision() {
+            ThematicBreak()
+                .css
                 .borderRight(BorderRight.none)
                 .borderBottom(BorderBottom.none)
                 .borderLeft(BorderLeft.none)
                 .borderTop(.init(width: .px(1), style: .solid, color: .gray500))
-                .margin(vertical: 0, horizontal: .percent(30))
+                .margin(Margin.sides(vertical: .zero, horizontal: .percent(30)))
         }
-        .margin(
-            top: .rem(1),
-            bottom: .rem(2)
-        )
+        .css
+        .marginTop(MarginTop.rem(1))
+        .marginBottom(MarginBottom.rem(2))
     }
 
     @HTML.Builder
     mutating func visitUnorderedList(_ unorderedList: Markdown.UnorderedList) -> HTML.AnyView {
-        ul {
+        UnorderedList() {
             for child in unorderedList.children {
                 visit(child)
             }
         }
-        .flexContainer(
-            direction: .column,
-            rowGap: .length(.rem(0.5))
-        )
-        .margin(
-            vertical: 0,
-            horizontal: nil
-        )
+        .css
+        .display(Display.flex)
+        .flexDirection(FlexDirection.column)
+        .rowGap(RowGap.length(.rem(0.5)))
+        .marginTop(MarginTop.zero)
+        .marginBottom(MarginBottom.zero)
     }
 }
 
@@ -485,26 +505,26 @@ extension HTML.Builder {
 }
 
 private struct BlockQuoteStyle {
-    var backgroundColor: HTMLColor
-    var borderColor: HTMLColor
+    var backgroundColor: DarkModeColor
+    var borderColor: DarkModeColor
 
     init(blockName: String) {
         switch blockName {
         case "Warning", "Correction":
-            self.backgroundColor = HTMLColor(light: .hex("FDF2F4"), dark: .hex("2E0402"))
-            self.borderColor = HTMLColor(light: .hex("D02C1E"), dark: .hex("EB4642"))
+            self.backgroundColor = DarkModeColor(light: .hex("FDF2F4"), dark: .hex("2E0402"))
+            self.borderColor = DarkModeColor(light: .hex("D02C1E"), dark: .hex("EB4642"))
         case "Important":
-            self.backgroundColor = HTMLColor(light: .hex("FEFBF3"), dark: .hex("291F04"))
-            self.borderColor = HTMLColor(light: .hex("966922"), dark: .hex("F4B842"))
+            self.backgroundColor = DarkModeColor(light: .hex("FEFBF3"), dark: .hex("291F04"))
+            self.borderColor = DarkModeColor(light: .hex("966922"), dark: .hex("F4B842"))
         case "Announcement", "Tip":
-            self.backgroundColor = HTMLColor(light: .hex("FBFFFF"), dark: .hex("0F2C2B"))
-            self.borderColor = HTMLColor(light: .hex("4B767C"), dark: .hex("9FFCE5"))
+            self.backgroundColor = DarkModeColor(light: .hex("FBFFFF"), dark: .hex("0F2C2B"))
+            self.borderColor = DarkModeColor(light: .hex("4B767C"), dark: .hex("9FFCE5"))
         case "Preamble":
-            self.backgroundColor = HTMLColor(light: .hex("FBF8FF"), dark: .hex("1e1925"))
-            self.borderColor = HTMLColor(light: .hex("8D51F6"), dark: .hex("8D51F6"))
+            self.backgroundColor = DarkModeColor(light: .hex("FBF8FF"), dark: .hex("1e1925"))
+            self.borderColor = DarkModeColor(light: .hex("8D51F6"), dark: .hex("8D51F6"))
         default:
-            self.backgroundColor = HTMLColor(light: .hex("f5f5f5"), dark: .hex("323232"))
-            self.borderColor = HTMLColor(light: .hex("696969"), dark: .hex("9a9a9a"))
+            self.backgroundColor = DarkModeColor(light: .hex("f5f5f5"), dark: .hex("323232"))
+            self.borderColor = DarkModeColor(light: .hex("696969"), dark: .hex("9a9a9a"))
         }
     }
 }
@@ -569,44 +589,52 @@ public struct Timestamp: HTML.View {
     }
 
     public var body: some HTML.View {
-        div {
+        ContentDivision() {
             if let speaker {
-                strong {
+                StrongImportance() {
                     HTML.Text(speaker)
                 }
-                .color(.gray500)
-                .fontSize(.rem(0.875))
-                .lineHeight(1, media: .desktop)
-                .position(.relative, media: .desktop)
+                .css
+                .color(DarkModeColor.gray500)
+                .fontSize(FontSize.rem(0.875))
                 .inlineStyle("text-transform", "uppercase")
-                .top(.rem(0.5), media: .desktop)
+                .desktop {
+                    $0.lineHeight(1)
+                      .position(.relative)
+                      .top(Top.rem(0.5))
+                }
             }
 
             let duration = self.duration
-            div {
-                div {
-                    a(href: .init(value: anchor)) {
+            ContentDivision() {
+                ContentDivision() {
+                    Anchor(href: .init(value: anchor)) {
                         HTML.Text(formatted())
                     }
                     .attribute("data-timestamp", "\(duration)")
+                    .css
+                    .color(DarkModeColor.gray800.withDarkColor(.gray300))
                 }
-                .fontSize(.small)
-                .textDecoration(TextDecoration.none)
-                .dependency(\.theme.text.link, .gray800.withDarkColor(.gray300))
                 .id(id)
+                .css
+                .fontSize(FontSize.small)
+                .textDecoration(TextDecoration.none)
                 .inlineStyle("font-variant-numeric", "tabular-nums")
-                .lineHeight(3, media: .desktop)
-                .margin(left: .rem(-4), media: .desktop)
-                .position(.absolute, media: .desktop)
-                .textAlign(.right, media: .desktop)
-                .width(.rem(3.25), media: .desktop)
+                .desktop {
+                    $0.marginLeft(MarginLeft.rem(-4))
+                      .lineHeight(3)
+                      .position(.absolute)
+                      .textAlign(.right)
+                      .width(Width.rem(3.25))
+                }
             }
         }
-        .flexContainer(
-            direction: .columnReverse,
-            rowGap: .length(.rem(0.5)),
-            media: .mobile
-        )
+        .css
+        .mobile {
+            $0.display(Display.flex)
+              .flexDirection(FlexDirection.columnReverse)
+              .rowGap(RowGap.length(.rem(0.5)))
+        }
     }
 }
 
