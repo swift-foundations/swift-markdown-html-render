@@ -1,23 +1,25 @@
 public import HTML_Rendering
-public import CSS_HTML_Rendering
-public import CSS_Theming
-public import Dependencies
+import CSS_HTML_Rendering
+import CSS_Theming
+import Dependencies
 
-public struct Diagnostic<Message: HTML.View>: HTML.View {
-    let level: DiagnosticLevel
-    let message: Message
-
-    public init(level: DiagnosticLevel, @HTML.Builder message: () -> Message) {
+public struct Diagnostic {
+    let level: Diagnostic.Level
+    
+    public init(level: Diagnostic.Level) {
         self.level = level
-        self.message = message()
     }
+}
 
-    public var body: some HTML.View {
+extension Diagnostic {
+    public func callAsFunction<Message: HTML.View>(
+    @HTML.Builder _ message: () -> Message
+    ) -> some HTML.View {
         ContentDivision() {
             HStack(spacing: 0) {
                 ContentDivision() {
                     ContentDivision() {
-                        level.icon
+                        self.level.icon
                     }
                     .css
                     .inlineStyle(
@@ -32,18 +34,18 @@ public struct Diagnostic<Message: HTML.View>: HTML.View {
                     .width(.px(14))
                 }
                 .css
-                .color(level.iconColor)
-                .backgroundColor(level.backgroundColor)
+                .color(self.level.iconColor)
+                .backgroundColor(self.level.backgroundColor)
                 .padding(Padding.sides(top: .px(8), right: .px(8), bottom: .px(7), left: .px(8)))
-
+                
                 ContentDivision() {
                     VStack(spacing: 0.5.rem) {
-                        message
+                        message()
                     }
                     .class("diagnostic")
                 }
                 .css
-                .backgroundColor(level.detailBackgroundColor)
+                .backgroundColor(self.level.detailBackgroundColor)
                 //                .color(.black.withDarkColor(.white))
                 .flexGrow()
                 .padding(.px(8))
@@ -53,7 +55,7 @@ public struct Diagnostic<Message: HTML.View>: HTML.View {
             .border(
                 width: .px(0.5),
                 style: .solid,
-                color: .init(light: .hex("\(level.backgroundColor.light)44"))
+                color: .init(light: .hex("\(self.level.backgroundColor.light)44"))
             )
             .dark {
                 $0.border(
@@ -74,7 +76,3 @@ public struct Diagnostic<Message: HTML.View>: HTML.View {
         )
     }
 }
-
-
-
-// SwiftUI Preview removed - uses swift-html specific features not available in swift-html-rendering

@@ -2,29 +2,28 @@ import HTML_Rendering
 @_spi(DynamicHTML) public import HTML_Renderable
 import CSS_HTML_Rendering
 import CSS_Theming
-import Markdown
 
-public typealias MarkdownDocument = Markdown.Document
+public enum Markdown {}
 
-extension HTML {
-    public struct Markdown {
+extension Markdown {
+    public struct HTML {
         public let markdown: String
         public let previewOnly: Bool
         public let tableOfContents: [Section]
-        public let content: HTML.AnyView
+        public let content: HTML_Renderable.HTML.AnyView
 
         public init(_ markdown: String, previewOnly: Bool = false) {
             self.markdown = markdown
             self.previewOnly = previewOnly
             var converter = HTMLConverter(previewOnly: previewOnly)
-            self.content = converter.visit(MarkdownDocument(parsing: markdown, options: .parseBlockDirectives))
+            self.content = converter.visit(SwiftMarkdown.Document(parsing: markdown, options: .parseBlockDirectives))
             self.tableOfContents = converter.tableOfContents
         }
     }
 }
 
-extension HTML.Markdown: HTML.View {
-    public var body: some HTML.View {
+extension Markdown.HTML: HTML_Renderable.HTML.View {
+    public var body: some HTML_Renderable.HTML.View {
         ContentDivision() {
             VStack(spacing: .rem(0.5)) {
                 content
@@ -40,7 +39,7 @@ extension HTML.Markdown: HTML.View {
     }
 }
 
-extension HTML.Markdown {
+extension Markdown.HTML {
     public struct Section {
         public let title: String
         public let id: String
@@ -59,20 +58,3 @@ extension HTML.Markdown {
         }
     }
 }
-
-func value(forArgument argument: String, block: BlockDirective) -> String? {
-    block.argumentText.segments
-        .compactMap {
-            let text = $0.trimmedText.drop(while: { $0 == " " })
-            return text.hasPrefix("\(argument): \"")
-                ? text.dropFirst("\(argument): \"".count).prefix(while: { $0 != "\"" })
-                : nil
-        }
-        .first
-        .map(String.init)
-}
-
-
-
-
-

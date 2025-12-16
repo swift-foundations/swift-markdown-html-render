@@ -5,20 +5,38 @@
 //  Created by Coen ten Thije Boonkkamp on 16/12/2025.
 //
 
-public import HTML_Rendering
-public import CSS_HTML_Rendering
-public import CSS_Theming
-public import Dependencies
+import HTML_Rendering
+import CSS_HTML_Rendering
+import CSS_Theming
+import Dependencies
 
-public struct DiagnosticLevel: Sendable {
-    var icon: DiagnosticIcon
-    var iconColor: DarkModeColor
-    var highlightColor: DarkModeColor
-    var underlineColor: DarkModeColor?
-    var backgroundColor: DarkModeColor
-    var detailBackgroundColor: DarkModeColor
-    var buttonBackgroundColor: DarkModeColor
+extension Diagnostic {
+    
+    public struct Level: Sendable {
+        var icon: Diagnostic.Icon
+        var iconColor: DarkModeColor
+        var highlightColor: DarkModeColor
+        var underlineColor: DarkModeColor?
+        var backgroundColor: DarkModeColor
+        var detailBackgroundColor: DarkModeColor
+        var buttonBackgroundColor: DarkModeColor
+    }
+}
 
+extension Diagnostic.Level {
+    init?(aside: SwiftMarkdown.Aside) {
+        switch aside.kind.rawValue {
+        case "Error": self = .error
+        case "Expected Failure": self = .knownIssue
+        case "Failed": self = .issue
+        case "Runtime Warning": self = .runtimeWarning
+        case "Warning": self = .warning
+        default: return nil
+        }
+    }
+}
+
+extension Diagnostic.Level {
     public static let error = Self(
         icon: .error,
         iconColor: .init(light: .hex("CA0900"), dark: .hex("ED2239")),

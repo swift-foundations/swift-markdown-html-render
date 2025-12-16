@@ -9,4 +9,4 @@
 @_exported public import HTML_Rendering
 @_exported public import CSS_HTML_Rendering
 @_exported public import CSS_Theming
-@_exported public import Markdown
+@_exported public import SwiftMarkdown

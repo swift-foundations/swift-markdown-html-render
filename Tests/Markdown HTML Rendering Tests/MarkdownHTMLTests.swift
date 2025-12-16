@@ -11,20 +11,20 @@ import InlineSnapshotTesting
 import HTML_Rendering_TestSupport
 @testable import Markdown_HTML_Rendering
 
-@Suite("HTMLMarkdown Tests")
-struct HTMLMarkdownTests {
+@Suite("Markdown.HTML Tests")
+struct MarkdownHTMLTests {
     @Test("Basic markdown rendering")
     func basicMarkdownRendering() {
-        let markdown = Markdown("# Hello World")
+        let markdown = Markdown.HTML("# Hello World")
         #expect(markdown.tableOfContents.count >= 0)
     }
 }
 
 // MARK: - Snapshot Tests
 
-extension SnapshotTests.HTMLMarkdown {
+extension SnapshotTests.MarkdownHTML {
     @Test func heading() {
-        let markdown = Markdown("# Hello World")
+        let markdown = Markdown.HTML("# Hello World")
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -41,7 +41,7 @@ extension SnapshotTests.HTMLMarkdown {
     }
 
     @Test func paragraph() {
-        let markdown = Markdown("This is a paragraph.")
+        let markdown = Markdown.HTML("This is a paragraph.")
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -56,7 +56,7 @@ extension SnapshotTests.HTMLMarkdown {
     }
 
     @Test func codeBlock() {
-        let markdown = Markdown("""
+        let markdown = Markdown.HTML("""
             ```swift
             let x = 1
             ```
@@ -75,7 +75,7 @@ extension SnapshotTests.HTMLMarkdown {
     }
 
     @Test func blockquote() {
-        let markdown = Markdown("> This is a quote")
+        let markdown = Markdown.HTML("> This is a quote")
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -94,7 +94,7 @@ extension SnapshotTests.HTMLMarkdown {
     }
 
     @Test func link() {
-        let markdown = Markdown("[Link](https://example.com)")
+        let markdown = Markdown.HTML("[Link](https://example.com)")
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -109,7 +109,7 @@ extension SnapshotTests.HTMLMarkdown {
     }
 
     @Test func orderedList() {
-        let markdown = Markdown("""
+        let markdown = Markdown.HTML("""
             1. First
             2. Second
             3. Third
@@ -146,7 +146,7 @@ extension SnapshotTests.HTMLMarkdown {
     }
 
     @Test func unorderedList() {
-        let markdown = Markdown("""
+        let markdown = Markdown.HTML("""
             - Apple
             - Banana
             - Cherry
@@ -183,7 +183,7 @@ extension SnapshotTests.HTMLMarkdown {
     }
 
     @Test func table() {
-        let markdown = Markdown("""
+        let markdown = Markdown.HTML("""
             | Header 1 | Header 2 |
             |----------|----------|
             | Cell 1   | Cell 2   |
@@ -218,7 +218,7 @@ extension SnapshotTests.HTMLMarkdown {
     }
 
     @Test func emphasis() {
-        let markdown = Markdown("*italic* and **bold** and ***both***")
+        let markdown = Markdown.HTML("*italic* and **bold** and ***both***")
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -233,7 +233,7 @@ extension SnapshotTests.HTMLMarkdown {
     }
 
     @Test func inlineCode() {
-        let markdown = Markdown("Use `print()` to output")
+        let markdown = Markdown.HTML("Use `print()` to output")
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -248,7 +248,7 @@ extension SnapshotTests.HTMLMarkdown {
     }
 
     @Test func image() {
-        let markdown = Markdown("![Alt text](image.png)")
+        let markdown = Markdown.HTML("![Alt text](image.png)")
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -265,7 +265,7 @@ extension SnapshotTests.HTMLMarkdown {
     }
 
     @Test func thematicBreak() {
-        let markdown = Markdown("Before\n\n---\n\nAfter")
+        let markdown = Markdown.HTML("Before\n\n---\n\nAfter")
         assertInlineSnapshot(of: markdown, as: .html) {
             """
 
@@ -285,7 +285,7 @@ extension SnapshotTests.HTMLMarkdown {
     }
 
     @Test func tableOfContents() {
-        let markdown = Markdown("""
+        let markdown = Markdown.HTML("""
             # Section 1
             @T(0:00)
             Content

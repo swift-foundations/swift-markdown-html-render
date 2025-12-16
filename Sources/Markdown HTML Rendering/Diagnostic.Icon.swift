@@ -6,37 +6,28 @@
 //
 
 public import HTML_Rendering
-public import CSS_HTML_Rendering
-public import CSS_Theming
-public import Dependencies
+import CSS_HTML_Rendering
+import CSS_Theming
+import Dependencies
+import SwiftMarkdown
 
-// Local SVG icons for diagnostics, replacing LegacySVG
-public struct DiagnosticIcon: HTML.View, Sendable {
-    let rawSVG: String
-    
-    init(_ content: String) {
-        self.rawSVG = content
-    }
-    
-    public var body: some HTML.View {
-        HTML.Raw(rawSVG)
-    }
-}
-
-extension DiagnosticLevel {
-    init?(aside: Markdown.Aside) {
-        switch aside.kind.rawValue {
-        case "Error": self = .error
-        case "Expected Failure": self = .knownIssue
-        case "Failed": self = .issue
-        case "Runtime Warning": self = .runtimeWarning
-        case "Warning": self = .warning
-        default: return nil
+extension Diagnostic {
+    public struct Icon: HTML.View, Sendable {
+        let rawSVG: String
+        
+        init(_ content: String) {
+            self.rawSVG = content
+        }
+        
+        public var body: some HTML.View {
+            HTML.Raw(rawSVG)
         }
     }
 }
 
-extension DiagnosticIcon {
+
+
+extension Diagnostic.Icon {
     public static let error = Self("""
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 13.1641 12.2266">
          <g>

@@ -153,7 +153,7 @@ extension SnapshotTests.Diagnostic {
     }
 
     @Test func inlineErrorDiagnostic() {
-        let diagnostic = InlineDiagnostic(
+        let diagnostic = Diagnostic.Inline(
             level: .error,
             message: "Inline error message"
         )
@@ -180,7 +180,7 @@ extension SnapshotTests.Diagnostic {
     }
 
     @Test func inlineWarningDiagnostic() {
-        let diagnostic = InlineDiagnostic(
+        let diagnostic = Diagnostic.Inline(
             level: .warning,
             message: "Inline warning message"
         )

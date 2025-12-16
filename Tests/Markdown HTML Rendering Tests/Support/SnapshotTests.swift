@@ -17,7 +17,7 @@ import Testing
 struct SnapshotTests {}
 
 extension SnapshotTests {
-    @Suite struct HTMLMarkdown {}
+    @Suite struct MarkdownHTML {}
     @Suite struct Diagnostic {}
     @Suite struct Timestamp {}
 }

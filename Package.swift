@@ -6,7 +6,7 @@ extension Target.Dependency {
     static var htmlRendering: Self { .product(name: "HTML Rendering", package: "swift-html-rendering") }
     static var cssHTMLRendering: Self { .product(name: "CSS HTML Rendering", package: "swift-css-html-rendering") }
     static var cssTheming: Self { .product(name: "CSS Theming", package: "swift-css") }
-    static var swiftMarkdown: Self { .product(name: "Markdown", package: "swift-markdown") }
+    static var appleSwiftMarkdown: Self { .product(name: "Markdown", package: "swift-markdown") }
     static var dependencies: Self { .product(name: "Dependencies", package: "swift-dependencies") }
     static var orderedCollections: Self { .product(name: "OrderedCollections", package: "swift-collections") }
     static var htmlRenderableTestSupport: Self { .product(name: "HTML Rendering TestSupport", package: "swift-html-rendering") }
@@ -34,13 +34,20 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-collections", from: "1.1.2"),
     ],
     targets: [
+        // Internal target that re-exports swift-markdown as SwiftMarkdown namespace
+        .target(
+            name: "SwiftMarkdown",
+            dependencies: [
+                .appleSwiftMarkdown
+            ]
+        ),
         .target(
             name: "Markdown HTML Rendering",
             dependencies: [
                 .htmlRendering,
                 .cssHTMLRendering,
                 .cssTheming,
-                .swiftMarkdown,
+                "SwiftMarkdown",
                 .dependencies,
                 .orderedCollections
             ]
