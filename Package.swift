@@ -4,7 +4,7 @@ import PackageDescription
 
 extension Target.Dependency {
     static var htmlRendering: Self { .product(name: "HTML Rendering", package: "swift-html-rendering") }
-    static var cssHTMLRendering: Self { .product(name: "CSS HTML Rendering", package: "swift-css-html-rendering") }
+    static var css: Self { .product(name: "CSS", package: "swift-css") }
     static var cssTheming: Self { .product(name: "CSS Theming", package: "swift-css") }
     static var appleSwiftMarkdown: Self { .product(name: "Markdown", package: "swift-markdown") }
     static var dependencies: Self { .product(name: "Dependencies", package: "swift-dependencies") }
@@ -26,9 +26,8 @@ let package = Package(
         .library(name: "Markdown Previews", targets: ["Markdown Previews"])
     ],
     dependencies: [
-        .package(path: "../swift-html-rendering"),
-        .package(path: "../swift-css-html-rendering"),
-        .package(path: "../swift-css"),
+        .package(url: "https://github.com/coenttb/swift-css", from: "0.1.0"),
+        .package(url: "https://github.com/coenttb/swift-html-rendering", from: "0.1.0"),
         .package(url: "https://github.com/swiftlang/swift-markdown", from: "0.4.0"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.9.2"),
         .package(url: "https://github.com/apple/swift-collections", from: "1.1.2"),
@@ -45,7 +44,7 @@ let package = Package(
             name: "Markdown HTML Rendering",
             dependencies: [
                 .htmlRendering,
-                .cssHTMLRendering,
+                .css,
                 .cssTheming,
                 "SwiftMarkdown",
                 .dependencies,
