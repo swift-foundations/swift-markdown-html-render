@@ -29,16 +29,19 @@ extension Markdown.HTML.Configuration {
     /// }
     /// ```
     public struct Directives: Sendable {
-        public var handler: @Sendable (Directive) -> Result
-
-        public init(_ handler: @escaping @Sendable (Directive) -> Result) {
+        public var handler: @Sendable (Directive) -> Markdown.HTML.Configuration.Directives.Directive.Result
+        
+        public init(_ handler: @escaping @Sendable (Directive) -> Markdown.HTML.Configuration.Directives.Directive.Result) {
             self.handler = handler
         }
+    }
+}
 
-        public static var `default`: Self {
-            .init { directive in
-                switch directive.name {
-                case "Button":
+extension Markdown.HTML.Configuration.Directives {
+    public static var `default`: Self {
+        .init { directive in
+            switch directive.name {
+            case "Button":
                     .rendered(HTML.AnyView {
                         VStack(alignment: .center) {
                             Anchor(href: .init(directive.rawArguments)) {
@@ -48,11 +51,11 @@ extension Markdown.HTML.Configuration {
                             .margin(Margin.sides(vertical: .rem(0.5), horizontal: .zero))
                         }
                     })
-
-                case "Comment":
+                
+            case "Comment":
                     .suppress
-
-                case "Video":
+                
+            case "Video":
                     .rendered(HTML.AnyView {
                         Video {
                             Source(src: directive.arguments["source"].map(Src.init))
@@ -64,27 +67,27 @@ extension Markdown.HTML.Configuration {
                         .objectFit(.cover)
                         .marginBottom(MarginBottom.rem(1))
                     })
-
-                default:
+                
+            default:
                     .useDefault
-                }
             }
         }
-
-        /// Combine multiple directive handlers.
-        /// The first handler that doesn't return `.useDefault` wins.
-        public func adding(_ other: Directives) -> Self {
-            Directives { directive in
-                switch self.handler(directive) {
-                case .useDefault:
-                    return other.handler(directive)
-                case let result:
-                    return result
-                }
+    }
+    
+    /// Combine multiple directive handlers.
+    /// The first handler that doesn't return `.useDefault` wins.
+    public func adding(_ other: Markdown.HTML.Configuration.Directives) -> Self {
+        Markdown.HTML.Configuration.Directives { directive in
+            switch self.handler(directive) {
+            case .useDefault:
+                return other.handler(directive)
+            case let result:
+                return result
             }
         }
     }
 }
+
 
 extension Markdown.HTML.Configuration.Directives {
     /// Input for a block directive.
@@ -93,7 +96,7 @@ extension Markdown.HTML.Configuration.Directives {
         public let rawArguments: String
         public let arguments: [String: String]
         public let children: HTML.AnyView
-
+        
         public init(name: String, rawArguments: String, arguments: [String: String], children: HTML.AnyView) {
             self.name = name
             self.rawArguments = rawArguments
@@ -101,7 +104,9 @@ extension Markdown.HTML.Configuration.Directives {
             self.children = children
         }
     }
+}
 
+extension Markdown.HTML.Configuration.Directives.Directive {
     /// Result of handling a directive.
     public enum Result: Sendable {
         /// Use this rendered view
