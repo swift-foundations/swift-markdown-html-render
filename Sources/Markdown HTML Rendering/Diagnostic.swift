@@ -55,15 +55,8 @@ extension Diagnostic {
             .border(
                 width: .px(0.5),
                 style: .solid,
-                color: .init(light: .hex("\(self.level.backgroundColor.light)44"))
+                color: self.level.backgroundColor.opacity(0.27)
             )
-            .dark {
-                $0.border(
-                    width: .px(0.5),
-                    style: .solid,
-                    color: .init(light: .hex("\(level.backgroundColor.dark)44"))
-                )
-            }
             .overflow(Overflow.hidden)
         }
         .css

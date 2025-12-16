@@ -12,7 +12,7 @@ import Testing
 @MainActor
 @Suite(
     .serialized,
-    .snapshots(record: .failed)
+    .snapshots(record: .never)
 )
 struct SnapshotTests {}
 
