@@ -84,9 +84,9 @@ extension SnapshotTests.MarkdownHTML {
 
             <div class="display-0">
               <div class="row-gap-1 max-width-2 flex-direction-3 display-4 align-items-5">
-                <blockquote class="padding-6 margin-7 border-radius-8 border-9 border-10 background-color-11 background-color-12 color-13 color-14">
-                  <div class="row-gap-1 max-width-2 flex-direction-3 display-4 align-items-5"><strong class="color-15 color-16">Note</strong>
-                    <p class="margin-17 padding-18 line-height-19">This is a quote
+                <blockquote class="padding-6 margin-7 border-radius-8 border-9 border-10 background-color-11 background-color-12 color-13">
+                  <div class="row-gap-1 max-width-2 flex-direction-3 display-4 align-items-5"><strong class="color-14 color-15">Note</strong>
+                    <p class="margin-16 padding-17 line-height-18">This is a quote
                     </p>
                   </div>
                 </blockquote>
