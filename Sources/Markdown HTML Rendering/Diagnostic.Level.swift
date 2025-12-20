@@ -7,7 +7,7 @@
 
 import CSS_HTML_Rendering
 import CSS_Theming
-import Dependencies
+
 import HTML_Rendering
 
 extension Diagnostic {

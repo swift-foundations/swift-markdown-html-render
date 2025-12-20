@@ -7,7 +7,7 @@
 
 import CSS_HTML_Rendering
 import CSS_Theming
-import Dependencies
+
 public import HTML_Rendering
 import SwiftMarkdown
 
