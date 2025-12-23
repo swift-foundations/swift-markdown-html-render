@@ -25,8 +25,8 @@ let package = Package(
         .library(name: "Markdown Previews", targets: ["Markdown Previews"])
     ],
     dependencies: [
-        .package(url: "https://github.com/coenttb/swift-css", from: "0.4.0"),
-        .package(url: "https://github.com/coenttb/swift-html-rendering", from: "0.1.14"),
+        .package(url: "https://github.com/coenttb/swift-css", from: "0.6.1"),
+        .package(url: "https://github.com/coenttb/swift-html-rendering", from: "0.1.15"),
         .package(url: "https://github.com/swiftlang/swift-markdown", from: "0.4.0"),
         .package(url: "https://github.com/apple/swift-collections", from: "1.1.2"),
     ],
