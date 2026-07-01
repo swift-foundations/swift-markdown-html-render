@@ -1,0 +1,9 @@
+# .github/metadata.yaml
+# Triaged by AI-assisted bulk pass (2026-04-29).
+description: "Markdown html render for Swift."
+topics:
+  - foundations
+  - markdown
+homepage: "https://swift-institute.org"
+readme:
+  family: E

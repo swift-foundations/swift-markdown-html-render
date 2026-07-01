@@ -7,12 +7,12 @@
 
 #if canImport(SwiftUI) && (os(macOS) || os(iOS))
     import SwiftUI
-    import HTML_Renderable
+    import HTML_Rendering_Core
     @testable import Markdown_HTML_Rendering
 
     #Preview("Heading") {
         HTML.Document {
-            Markdown.HTML {
+            Markdown {
                 "# Hello World"
             }
         }
@@ -20,7 +20,7 @@
 
     #Preview("Paragraph") {
         HTML.Document {
-            Markdown.HTML {
+            Markdown {
                 "This is a paragraph with some text."
             }
         }
@@ -28,7 +28,7 @@
 
     #Preview("Code Block") {
         HTML.Document {
-            Markdown.HTML {
+            Markdown {
                 """
                 ```swift
                 let x = 1
@@ -41,7 +41,7 @@
 
     #Preview("Blockquote") {
         HTML.Document {
-            Markdown.HTML {
+            Markdown {
                 "> This is a quote"
             }
         }
@@ -49,7 +49,7 @@
 
     #Preview("Link") {
         HTML.Document {
-            Markdown.HTML {
+            Markdown {
                 "[Link to Example](https://example.com)"
             }
         }
@@ -57,7 +57,7 @@
 
     #Preview("Ordered List") {
         HTML.Document {
-            Markdown.HTML {
+            Markdown {
                 """
                 1. First item
                 2. Second item
@@ -69,7 +69,7 @@
 
     #Preview("Unordered List") {
         HTML.Document {
-            Markdown.HTML {
+            Markdown {
                 """
                 - Apple
                 - Banana
@@ -81,7 +81,7 @@
 
     #Preview("Table") {
         HTML.Document {
-            Markdown.HTML {
+            Markdown {
                 """
                 | Header 1 | Header 2 |
                 |----------|----------|
@@ -94,7 +94,7 @@
 
     #Preview("Emphasis") {
         HTML.Document {
-            Markdown.HTML {
+            Markdown {
                 "*italic* and **bold** and ***both***"
             }
         }
@@ -102,7 +102,7 @@
 
     #Preview("Inline Code") {
         HTML.Document {
-            Markdown.HTML {
+            Markdown {
                 "Use `print()` to output text"
             }
         }
@@ -110,7 +110,7 @@
 
     #Preview("Image") {
         HTML.Document {
-            Markdown.HTML {
+            Markdown {
                 "![Alt text](https://via.placeholder.com/150)"
             }
         }
@@ -118,7 +118,7 @@
 
     #Preview("Thematic Break") {
         HTML.Document {
-            Markdown.HTML {
+            Markdown {
                 """
                 Before the break
 
@@ -132,7 +132,7 @@
 
     #Preview("Complex Document") {
         HTML.Document {
-            Markdown.HTML {
+            Markdown {
                 """
                 # Welcome
 
@@ -163,8 +163,8 @@
 
     #Preview("Diagnostic Error") {
         HTML.Document {
-            Diagnostic(level: .error) {
-                Markdown.HTML {
+            Markdown.Diagnostic(level: .error) {
+                Markdown {
                     "This is an **error** message"
                 }
             }
@@ -173,8 +173,8 @@
 
     #Preview("Diagnostic Warning") {
         HTML.Document {
-            Diagnostic(level: .warning) {
-                Markdown.HTML {
+            Markdown.Diagnostic(level: .warning) {
+                Markdown {
                     "This is a **warning** message"
                 }
             }
@@ -183,7 +183,7 @@
 
     #Preview("Timestamp") {
         HTML.Document {
-            Markdown.HTML {
+            Markdown {
                 """
                 # Episode 1
                 @T(0:00) John

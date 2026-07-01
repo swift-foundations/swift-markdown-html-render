@@ -15,7 +15,7 @@ struct Slug: Hashable {
     var generation: Int
 }
 
-extension Set<Slug> {
+extension Swift.Set<Slug> {
     func slug(for string: String) -> String {
         var slug = Slug(name: string.slug(), generation: 0)
         while contains(slug) {
