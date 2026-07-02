@@ -93,7 +93,7 @@ Three library products. Importing `Markdown HTML Rendering` also brings the HTML
 ## Community
 
 <!-- BEGIN: discussion -->
-*Discussion thread will be created at first public flip.*
+*Discussion thread will be created at first public release.*
 <!-- END: discussion -->
 
 ## License
