@@ -1,6 +1,6 @@
 # .github/metadata.yaml
 # Triaged by AI-assisted bulk pass (2026-04-29).
-description: "Markdown html render for Swift."
+description: "Rendering Markdown to composable HTML.View trees, with heading slugs, block directives, and table-of-contents extraction, for Swift."
 topics:
   - foundations
   - markdown
