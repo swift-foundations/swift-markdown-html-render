@@ -12,13 +12,16 @@ extension Markdown.Test.Unit {
         @Test
         func `default directives suppress Comment`() {
             let directives = Markdown.Configuration.Directives.default
-            let result = directives.handler(.init(
-                name: "Comment",
-                rawArguments: "",
-                arguments: [:],
-                children: HTML.AnyView { HTML.Empty() }
-            ))
-            if case .suppress = result {} else {
+            let result = directives.handler(
+                .init(
+                    name: "Comment",
+                    rawArguments: "",
+                    arguments: [:],
+                    children: HTML.AnyView { HTML.Empty() }
+                )
+            )
+            if case .suppress = result {
+            } else {
                 Issue.record("Expected .suppress for Comment directive")
             }
         }
@@ -26,13 +29,16 @@ extension Markdown.Test.Unit {
         @Test
         func `default directives use default for unknown`() {
             let directives = Markdown.Configuration.Directives.default
-            let result = directives.handler(.init(
-                name: "UnknownDirective",
-                rawArguments: "",
-                arguments: [:],
-                children: HTML.AnyView { HTML.Empty() }
-            ))
-            if case .useDefault = result {} else {
+            let result = directives.handler(
+                .init(
+                    name: "UnknownDirective",
+                    rawArguments: "",
+                    arguments: [:],
+                    children: HTML.AnyView { HTML.Empty() }
+                )
+            )
+            if case .useDefault = result {
+            } else {
                 Issue.record("Expected .useDefault for unknown directive")
             }
         }
@@ -40,13 +46,16 @@ extension Markdown.Test.Unit {
         @Test
         func `default directives render Button`() {
             let directives = Markdown.Configuration.Directives.default
-            let result = directives.handler(.init(
-                name: "Button",
-                rawArguments: "https://example.com",
-                arguments: [:],
-                children: HTML.AnyView { HTML.Text("Click me") }
-            ))
-            if case .rendered = result {} else {
+            let result = directives.handler(
+                .init(
+                    name: "Button",
+                    rawArguments: "https://example.com",
+                    arguments: [:],
+                    children: HTML.AnyView { HTML.Text("Click me") }
+                )
+            )
+            if case .rendered = result {
+            } else {
                 Issue.record("Expected .rendered for Button directive")
             }
         }
@@ -54,13 +63,16 @@ extension Markdown.Test.Unit {
         @Test
         func `default directives render Video`() {
             let directives = Markdown.Configuration.Directives.default
-            let result = directives.handler(.init(
-                name: "Video",
-                rawArguments: "",
-                arguments: ["source": "video.mp4"],
-                children: HTML.AnyView { HTML.Empty() }
-            ))
-            if case .rendered = result {} else {
+            let result = directives.handler(
+                .init(
+                    name: "Video",
+                    rawArguments: "",
+                    arguments: ["source": "video.mp4"],
+                    children: HTML.AnyView { HTML.Empty() }
+                )
+            )
+            if case .rendered = result {
+            } else {
                 Issue.record("Expected .rendered for Video directive")
             }
         }
@@ -75,23 +87,29 @@ extension Markdown.Test.Unit {
             }
             let combined = Markdown.Configuration.Directives.default.adding(custom)
 
-            let commentResult = combined.handler(.init(
-                name: "Comment",
-                rawArguments: "",
-                arguments: [:],
-                children: HTML.AnyView { HTML.Empty() }
-            ))
-            if case .suppress = commentResult {} else {
+            let commentResult = combined.handler(
+                .init(
+                    name: "Comment",
+                    rawArguments: "",
+                    arguments: [:],
+                    children: HTML.AnyView { HTML.Empty() }
+                )
+            )
+            if case .suppress = commentResult {
+            } else {
                 Issue.record("Expected .suppress for Comment in combined")
             }
 
-            let customResult = combined.handler(.init(
-                name: "Custom",
-                rawArguments: "",
-                arguments: [:],
-                children: HTML.AnyView { HTML.Empty() }
-            ))
-            if case .suppress = customResult {} else {
+            let customResult = combined.handler(
+                .init(
+                    name: "Custom",
+                    rawArguments: "",
+                    arguments: [:],
+                    children: HTML.AnyView { HTML.Empty() }
+                )
+            )
+            if case .suppress = customResult {
+            } else {
                 Issue.record("Expected .suppress for Custom in combined")
             }
         }

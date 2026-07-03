@@ -7,7 +7,6 @@
 
 import CSS_HTML_Rendering
 import CSS_Theming
-
 import HTML_Rendering
 
 extension Markdown.Diagnostic {

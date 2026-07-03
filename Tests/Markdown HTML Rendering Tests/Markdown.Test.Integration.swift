@@ -11,17 +11,19 @@ extension Markdown.Test.Integration {
     struct `TableOfContents` {
         @Test
         func `extracts headings with timestamps from markdown`() {
-            let toc = Markdown.tableOfContents(from: """
-                # Section 1
-                @T(0:00)
-                Content
-                ## Section 1.1
-                @T(1:00)
-                More content
-                # Section 2
-                @T(2:00)
-                Final content
-                """)
+            let toc = Markdown.tableOfContents(
+                from: """
+                    # Section 1
+                    @T(0:00)
+                    Content
+                    ## Section 1.1
+                    @T(1:00)
+                    More content
+                    # Section 2
+                    @T(2:00)
+                    Final content
+                    """
+            )
             #expect(toc.count == 3)
             #expect(toc[0].title == "Section 1")
             #expect(toc[0].level == 1)
@@ -33,12 +35,14 @@ extension Markdown.Test.Integration {
 
         @Test
         func `headings without timestamps not in table of contents`() {
-            let toc = Markdown.tableOfContents(from: """
-                # Section 1
-                Content
-                ## Section 1.1
-                More content
-                """)
+            let toc = Markdown.tableOfContents(
+                from: """
+                    # Section 1
+                    Content
+                    ## Section 1.1
+                    More content
+                    """
+            )
             #expect(toc.isEmpty)
         }
 
@@ -56,14 +60,16 @@ extension Markdown.Test.Integration {
 
         @Test
         func `headings get unique slugs`() {
-            let toc = Markdown.tableOfContents(from: """
-                # Hello
-                @T(0:00)
-                Text
-                # Hello
-                @T(1:00)
-                Text
-                """)
+            let toc = Markdown.tableOfContents(
+                from: """
+                    # Hello
+                    @T(0:00)
+                    Text
+                    # Hello
+                    @T(1:00)
+                    Text
+                    """
+            )
             #expect(toc.count == 2)
             #expect(toc[0].id != toc[1].id)
             #expect(toc[0].id == "hello")
@@ -72,17 +78,19 @@ extension Markdown.Test.Integration {
 
         @Test
         func `table of contents with timestamps`() {
-            let toc = Markdown.tableOfContents(from: """
-                # Section 1
-                @T(0:00)
-                Content
-                ## Section 1.1
-                @T(1:00)
-                More content
-                # Section 2
-                @T(2:00)
-                Final content
-                """)
+            let toc = Markdown.tableOfContents(
+                from: """
+                    # Section 1
+                    @T(0:00)
+                    Content
+                    ## Section 1.1
+                    @T(1:00)
+                    More content
+                    # Section 2
+                    @T(2:00)
+                    Final content
+                    """
+            )
             #expect(toc.count == 3)
             #expect(toc[0].timestamp?.duration == 0)
             #expect(toc[1].timestamp?.duration == 60)

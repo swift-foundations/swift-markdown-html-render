@@ -46,7 +46,9 @@ extension Markdown.Rendering.CodeBlock {
             if let lang = input.language {
                 inner.append(.attribute(set: "class", value: "language-\(lang)"))
             }
-            inner.append(.push(.element(tagName: "code", isBlock: false, isVoid: false, isPreElement: false)))
+            inner.append(
+                .push(.element(tagName: "code", isBlock: false, isVoid: false, isPreElement: false))
+            )
             inner.append(.text(input.code))
             inner.append(.pop(.element(isBlock: false)))
 

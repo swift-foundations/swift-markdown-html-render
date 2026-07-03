@@ -14,7 +14,7 @@ extension `Snapshot Tests`.`Diagnostic` {
             Markdown.Diagnostic(level: .error) {
                 HTML.Text("This is an error message")
             }
-        }  matches: {
+        } matches: {
             """
             <div class="filter-0">
               <div class="overflow-1 border-2 border-3 border-radius-4 column-gap-5 size-6 flex-direction-7 display-8 vertical-align-9 align-items-10">

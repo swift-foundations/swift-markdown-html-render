@@ -1,8 +1,8 @@
 import CSS_HTML_Rendering
-@_spi(DynamicHTML) import HTML_Rendering_Core
 import HTML_Rendering
-import Render_Primitives
+@_spi(DynamicHTML) import HTML_Rendering_Core
 import Ownership_Mutable_Primitives
+import Render_Primitives
 
 extension Markdown.Rendering {
     /// A cached action sequence with a splice point for children.
@@ -145,7 +145,11 @@ extension Render_Primitives.Render.Context {
                 item: { state.value.actions.append(.push(.item)) },
                 link: { state.value.actions.append(.push(.link(destination: $0))) },
                 attributes: { state.value.actions.append(.push(.attributes)) },
-                element: { state.value.actions.append(.push(.element(tagName: $0, isBlock: $1, isVoid: $2, isPreElement: $3))) },
+                element: {
+                    state.value.actions.append(
+                        .push(.element(tagName: $0, isBlock: $1, isVoid: $2, isPreElement: $3))
+                    )
+                },
                 style: { state.value.actions.append(.push(.style)) }
             ),
             pop: Render.Pop(
@@ -162,7 +166,9 @@ extension Render_Primitives.Render.Context {
             addClass: { state.value.actions.append(.class(add: $0)) },
             writeRaw: { state.value.actions.append(.raw($0)) },
             registerStyle: { decl, atRule, sel, pseudo in
-                state.value.actions.append(.style(register: decl, atRule: atRule, selector: sel, pseudo: pseudo))
+                state.value.actions.append(
+                    .style(register: decl, atRule: atRule, selector: sel, pseudo: pseudo)
+                )
                 return nil
             },
             spliceActions: { actions in

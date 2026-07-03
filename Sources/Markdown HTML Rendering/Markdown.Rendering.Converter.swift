@@ -1,8 +1,8 @@
 import CSS_HTML_Rendering
 import CSS_Theming
 import Foundation
-@_spi(DynamicHTML) import HTML_Rendering_Core
 import HTML_Rendering
+@_spi(DynamicHTML) import HTML_Rendering_Core
 import Render_Primitives
 
 extension Markdown.Rendering {
@@ -23,7 +23,11 @@ extension Markdown.Rendering {
         private var existingSlugs: Swift.Set<String> = []
         var tableOfContents: [Markdown.Section] = []
 
-        init(rendering: Markdown.Rendering, configuration: Markdown.Configuration, previewOnly: Bool) {
+        init(
+            rendering: Markdown.Rendering,
+            configuration: Markdown.Configuration,
+            previewOnly: Bool
+        ) {
             self.rendering = rendering
             self.configuration = configuration
             self.previewOnly = previewOnly
@@ -63,12 +67,14 @@ extension Markdown.Rendering {
                 childActions.append(contentsOf: visit(child))
             }
 
-            return rendering.heading.render(.init(
-                level: heading.level,
-                slug: slug,
-                plainText: heading.plainText,
-                children: childActions
-            ))
+            return rendering.heading.render(
+                .init(
+                    level: heading.level,
+                    slug: slug,
+                    plainText: heading.plainText,
+                    children: childActions
+                )
+            )
         }
 
         // MARK: - Paragraph
@@ -99,11 +105,13 @@ extension Markdown.Rendering {
                 languageInfo = (nil, nil)
             }
 
-            return rendering.codeBlock.render(.init(
-                language: languageInfo.language,
-                code: codeBlock.code,
-                highlightLines: languageInfo.highlightLines
-            ))
+            return rendering.codeBlock.render(
+                .init(
+                    language: languageInfo.language,
+                    code: codeBlock.code,
+                    highlightLines: languageInfo.highlightLines
+                )
+            )
         }
 
         // MARK: - Block Quote
@@ -120,12 +128,14 @@ extension Markdown.Rendering {
                 childActions.append(contentsOf: visit(child))
             }
 
-            return rendering.blockQuote.render(.init(
-                kind: kind,
-                children: childActions,
-                isDiagnostic: diagnosticLevel != nil,
-                diagnosticLevel: diagnosticLevel
-            ))
+            return rendering.blockQuote.render(
+                .init(
+                    kind: kind,
+                    children: childActions,
+                    isDiagnostic: diagnosticLevel != nil,
+                    diagnosticLevel: diagnosticLevel
+                )
+            )
         }
 
         // MARK: - Emphasis
@@ -181,11 +191,13 @@ extension Markdown.Rendering {
             for child in link.children {
                 childActions.append(contentsOf: visit(child))
             }
-            return rendering.link.render(.init(
-                destination: link.destination,
-                title: link.title,
-                children: childActions
-            ))
+            return rendering.link.render(
+                .init(
+                    destination: link.destination,
+                    title: link.title,
+                    children: childActions
+                )
+            )
         }
 
         // MARK: - Image
@@ -193,11 +205,13 @@ extension Markdown.Rendering {
         mutating func visitImage(
             _ image: SwiftMarkdown.Image
         ) -> [Render.Action] {
-            rendering.image.render(.init(
-                source: image.source,
-                alt: image.plainText,
-                title: image.title
-            ))
+            rendering.image.render(
+                .init(
+                    source: image.source,
+                    alt: image.plainText,
+                    title: image.title
+                )
+            )
         }
 
         // MARK: - Lists
@@ -250,17 +264,23 @@ extension Markdown.Rendering {
                     cells: row.cells,
                     columnAlignments: table.columnAlignments
                 )
-                bodyActions.append(.push(.element(tagName: "tr", isBlock: true, isVoid: false, isPreElement: false)))
+                bodyActions.append(
+                    .push(
+                        .element(tagName: "tr", isBlock: true, isVoid: false, isPreElement: false)
+                    )
+                )
                 bodyActions.append(contentsOf: rowCells)
                 bodyActions.append(.pop(.element(isBlock: true)))
             }
 
-            return rendering.table.render(.init(
-                head: headActions,
-                body: bodyActions,
-                hasHead: !table.head.isEmpty,
-                hasBody: !table.body.isEmpty
-            ))
+            return rendering.table.render(
+                .init(
+                    head: headActions,
+                    body: bodyActions,
+                    hasHead: !table.head.isEmpty,
+                    hasBody: !table.body.isEmpty
+                )
+            )
         }
 
         private mutating func render(
@@ -272,7 +292,16 @@ extension Markdown.Rendering {
             var column = 0
             for cell in cells {
                 if cell.colspan > 0 && cell.rowspan > 0 {
-                    actions.append(.push(.element(tagName: tagName, isBlock: false, isVoid: false, isPreElement: false)))
+                    actions.append(
+                        .push(
+                            .element(
+                                tagName: tagName,
+                                isBlock: false,
+                                isVoid: false,
+                                isPreElement: false
+                            )
+                        )
+                    )
                     if let alignment = columnAlignments[column]?.attributeValue {
                         actions.append(.attribute(set: "align", value: alignment))
                     }
@@ -373,7 +402,9 @@ extension Markdown.Rendering {
 
             let directive = Markdown.Configuration.Directives.Directive(
                 name: blockDirective.name,
-                rawArguments: blockDirective.argumentText.segments.map(\.trimmedText).joined(separator: " "),
+                rawArguments: blockDirective.argumentText.segments.map(\.trimmedText).joined(
+                    separator: " "
+                ),
                 arguments: parseArguments(from: blockDirective),
                 children: childrenView
             )
@@ -427,7 +458,8 @@ extension Markdown.Rendering {
                         remaining = remaining[remaining.index(after: endQuote)...]
                     }
                 } else {
-                    let endIndex = remaining.firstIndex { $0 == "," || $0.isWhitespace } ?? remaining.endIndex
+                    let endIndex =
+                        remaining.firstIndex { $0 == "," || $0.isWhitespace } ?? remaining.endIndex
                     result[key] = String(remaining[..<endIndex])
                     remaining = remaining[endIndex...]
                 }

@@ -1,4 +1,3 @@
-
 extension Markdown.Rendering {
     public struct SoftBreak: Sendable {
         public var render: @Sendable () -> [Render.Action]

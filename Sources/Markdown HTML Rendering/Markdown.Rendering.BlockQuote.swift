@@ -1,7 +1,7 @@
 import CSS_HTML_Rendering
 import CSS_Theming
-@_spi(DynamicHTML) import HTML_Rendering_Core
 import HTML_Rendering
+@_spi(DynamicHTML) import HTML_Rendering_Core
 import SwiftMarkdown
 
 extension Markdown.Rendering {

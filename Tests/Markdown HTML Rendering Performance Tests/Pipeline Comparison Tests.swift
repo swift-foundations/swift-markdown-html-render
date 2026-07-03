@@ -17,7 +17,8 @@ import Testing
 private let bookChapter: String = {
     var parts: [String] = ["# Chapter: The Architecture of Rendering"]
     for i in 1...100 {
-        parts.append("""
+        parts.append(
+            """
             ## Section \(i): Design Considerations
 
             This section explores the **design considerations** for section \(i).
@@ -64,7 +65,8 @@ private let bookChapter: String = {
             > handles realistic document structure without degradation.
 
             ---
-            """)
+            """
+        )
     }
     return parts.joined(separator: "\n\n")
 }()
@@ -111,13 +113,19 @@ extension `Performance Tests` {
 
         // MARK: - Scale test: 500 sections (≈ full book)
 
-        @Test(.disabled("slow — re-enable for book-scale profiling"), .timed(iterations: 3, warmup: 1))
+        @Test(
+            .disabled("slow — re-enable for book-scale profiling"),
+            .timed(iterations: 3, warmup: 1)
+        )
         func `parse only - 500 sections`() {
             let content = generateBook(sections: 500)
             let _ = SwiftMarkdown.Document(parsing: content, options: .parseBlockDirectives)
         }
 
-        @Test(.disabled("slow — re-enable for book-scale profiling"), .timed(iterations: 3, warmup: 1))
+        @Test(
+            .disabled("slow — re-enable for book-scale profiling"),
+            .timed(iterations: 3, warmup: 1)
+        )
         func `full action pipeline - 500 sections`() {
             let content = generateBook(sections: 500)
             let state = Ownership.Mutable(HTML_Rendering_Core.HTML.Context())
@@ -126,7 +134,10 @@ extension `Performance Tests` {
             Markdown_HTML_Rendering.Markdown._render(view, context: &context)
         }
 
-        @Test(.disabled("slow — re-enable for book-scale profiling"), .timed(iterations: 3, warmup: 1))
+        @Test(
+            .disabled("slow — re-enable for book-scale profiling"),
+            .timed(iterations: 3, warmup: 1)
+        )
         func `old string pipeline - 500 sections`() throws {
             let content = generateBook(sections: 500)
             let markdown = Markdown_HTML_Rendering.Markdown { content }
@@ -282,7 +293,8 @@ private struct BareHTMLVisitor: SwiftMarkdown.MarkupVisitor {
 private func generateBook(sections: Int) -> String {
     var parts: [String] = ["# Book Title"]
     for i in 1...sections {
-        parts.append("""
+        parts.append(
+            """
             ## Section \(i)
 
             Content for section \(i) with **bold**, *italic*, and `code`.
@@ -303,7 +315,8 @@ private func generateBook(sections: Int) -> String {
             > Note for section \(i).
 
             ---
-            """)
+            """
+        )
     }
     return parts.joined(separator: "\n\n")
 }

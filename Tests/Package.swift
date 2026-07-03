@@ -8,7 +8,11 @@ let package = Package(
     dependencies: [
         .package(path: ".."),
         .package(url: "https://github.com/swift-foundations/swift-testing.git", branch: "main"),
-        .package(url: "https://github.com/swift-foundations/swift-html-render.git", branch: "main", traits: ["Testing"]),
+        .package(
+            url: "https://github.com/swift-foundations/swift-html-render.git",
+            branch: "main",
+            traits: ["Testing"]
+        ),
     ],
     targets: [
         .testTarget(

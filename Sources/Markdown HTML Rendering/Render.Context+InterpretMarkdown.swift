@@ -10,7 +10,12 @@ extension Render.Context {
         for action in actions {
             switch action {
             case .style(let declaration, let atRule, let selector, let pseudo):
-                if let className = register(style: declaration, atRule: atRule, selector: selector, pseudo: pseudo) {
+                if let className = register(
+                    style: declaration,
+                    atRule: atRule,
+                    selector: selector,
+                    pseudo: pseudo
+                ) {
                     add(class: className)
                 }
             default:

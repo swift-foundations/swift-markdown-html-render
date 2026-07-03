@@ -13,7 +13,9 @@ extension `Snapshot Tests`.`Timestamp` {
         let timestamp = Timestamp(format: "1:23:45", speaker: "John")
         #expect(timestamp != nil)
         if let timestamp {
-            snapshot(as: .html) { timestamp }  matches: {
+            snapshot(as: .html) {
+                timestamp
+            } matches: {
                 """
                 <div class="row-gap-0 flex-direction-1 display-2"><strong class="top-3 position-4 line-height-5 text-transform-6 font-size-7 color-8 color-9">John</strong>
                   <div class="top-3 position-4 line-height-5 text-transform-6 font-size-7 color-8 color-9">
@@ -31,7 +33,9 @@ extension `Snapshot Tests`.`Timestamp` {
         let timestamp = Timestamp(format: "5:30", speaker: nil)
         #expect(timestamp != nil)
         if let timestamp {
-            snapshot(as: .html) { timestamp } matches: {
+            snapshot(as: .html) {
+                timestamp
+            } matches: {
                 """
                 <div class="row-gap-0 flex-direction-1 display-2">
                   <div>

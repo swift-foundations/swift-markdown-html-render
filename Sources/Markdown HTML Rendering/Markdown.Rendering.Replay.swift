@@ -12,7 +12,8 @@ extension Markdown.Rendering {
         var body: some HTML.View { HTML.Empty() }
 
         static func _render(
-            _ view: borrowing Self, context: inout Render_Primitives.Render.Context
+            _ view: borrowing Self,
+            context: inout Render_Primitives.Render.Context
         ) {
             context.splice(view.actions)
         }

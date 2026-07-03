@@ -1,4 +1,3 @@
-
 extension Markdown.Rendering {
     public struct Text: Sendable {
         public var render: @Sendable (Input) -> [Render.Action]

@@ -12,7 +12,7 @@ extension `Snapshot Tests`.`Markdown HTML` {
     func `heading renders with correct level`() {
         snapshot(as: .html) {
             Markdown { "# Hello World" }
-        }  matches: {
+        } matches: {
             """
             <div class="display-0">
               <div class="row-gap-1 max-width-2 flex-direction-3 display-4 align-items-5"><a class="visibility-6 top-7 top-8 position-9 display-0" id="hello-world"></a>

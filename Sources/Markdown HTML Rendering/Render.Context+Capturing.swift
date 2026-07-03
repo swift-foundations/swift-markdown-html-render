@@ -1,5 +1,5 @@
-import Render_Primitives
 public import Ownership_Mutable_Primitives
+import Render_Primitives
 
 extension Render.Context {
     /// Creates a rendering context that captures all operations as ``Render.Action`` values.
@@ -22,7 +22,11 @@ extension Render.Context {
                 item: { buffer.value.append(.push(.item)) },
                 link: { buffer.value.append(.push(.link(destination: $0))) },
                 attributes: { buffer.value.append(.push(.attributes)) },
-                element: { buffer.value.append(.push(.element(tagName: $0, isBlock: $1, isVoid: $2, isPreElement: $3))) },
+                element: {
+                    buffer.value.append(
+                        .push(.element(tagName: $0, isBlock: $1, isVoid: $2, isPreElement: $3))
+                    )
+                },
                 style: { buffer.value.append(.push(.style)) }
             ),
             pop: Render.Pop(
@@ -39,7 +43,9 @@ extension Render.Context {
             addClass: { buffer.value.append(.class(add: $0)) },
             writeRaw: { buffer.value.append(.raw($0)) },
             registerStyle: { decl, atRule, sel, pseudo in
-                buffer.value.append(.style(register: decl, atRule: atRule, selector: sel, pseudo: pseudo))
+                buffer.value.append(
+                    .style(register: decl, atRule: atRule, selector: sel, pseudo: pseudo)
+                )
                 return nil
             },
             spliceActions: { buffer.value.append(contentsOf: $0) }

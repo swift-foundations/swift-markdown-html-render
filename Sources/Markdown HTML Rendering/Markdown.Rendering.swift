@@ -1,9 +1,9 @@
 import CSS_HTML_Rendering
 import CSS_Theming
-@_spi(DynamicHTML) import HTML_Rendering_Core
 import HTML_Rendering
-public import Render_Primitives
+@_spi(DynamicHTML) import HTML_Rendering_Core
 import Ownership_Mutable_Primitives
+public import Render_Primitives
 
 extension Markdown {
     /// Action-based element renderers for direct markdown rendering.

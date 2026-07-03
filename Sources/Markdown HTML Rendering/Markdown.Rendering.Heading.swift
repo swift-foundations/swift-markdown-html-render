@@ -1,7 +1,7 @@
 import CSS_HTML_Rendering
 import CSS_Theming
-@_spi(DynamicHTML) import HTML_Rendering_Core
 import HTML_Rendering
+@_spi(DynamicHTML) import HTML_Rendering_Core
 
 extension Markdown.Rendering {
     public struct Heading: Sendable {
@@ -20,7 +20,12 @@ extension Markdown.Rendering.Heading {
         public let plainText: String
         public let children: [Markdown.Rendering.Action]
 
-        public init(level: Int, slug: String, plainText: String, children: [Markdown.Rendering.Action]) {
+        public init(
+            level: Int,
+            slug: String,
+            plainText: String,
+            children: [Markdown.Rendering.Action]
+        ) {
             self.level = level
             self.slug = slug
             self.plainText = plainText
@@ -105,7 +110,16 @@ extension Markdown.Rendering.Heading {
 
             // Heading color CSS + dynamic heading tag
             content.append(contentsOf: headingColorTemplate)
-            content.append(.push(.element(tagName: "h\(input.level)", isBlock: true, isVoid: false, isPreElement: false)))
+            content.append(
+                .push(
+                    .element(
+                        tagName: "h\(input.level)",
+                        isBlock: true,
+                        isVoid: false,
+                        isPreElement: false
+                    )
+                )
+            )
             content.append(contentsOf: input.children)
 
             // Link icon — patch href

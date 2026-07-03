@@ -55,7 +55,8 @@ private let mediumMarkdown = """
 private let largeMarkdown: String = {
     var sections: [String] = ["# Large Document"]
     for i in 1...20 {
-        sections.append("""
+        sections.append(
+            """
             ## Section \(i)
 
             This is paragraph content for section \(i) with **bold**, *italic*, and `code`.
@@ -65,7 +66,8 @@ private let largeMarkdown: String = {
             - List item C in section \(i)
 
             Another paragraph with a [link](https://example.com/\(i)).
-            """)
+            """
+        )
     }
     return sections.joined(separator: "\n\n")
 }()
@@ -159,7 +161,10 @@ extension `Performance Tests` {
             Markdown._render(view, context: &context)
         }
 
-        @Test(.disabled("slow — re-enable for book-scale profiling"), .timed(iterations: 2, warmup: 1))
+        @Test(
+            .disabled("slow — re-enable for book-scale profiling"),
+            .timed(iterations: 2, warmup: 1)
+        )
         func `action path - extreme 500 sections`() {
             let state = Ownership.Mutable(HTML_Rendering_Core.HTML.Context())
             var context = Render.Context.html(state: state)
@@ -193,7 +198,8 @@ private let massiveMarkdown: String = {
 private func generateMarkdown(sections: Int) -> String {
     var parts: [String] = ["# Stress Test Document"]
     for i in 1...sections {
-        parts.append("""
+        parts.append(
+            """
             ## Section \(i)
 
             Paragraph with **bold**, *italic*, `code`, and a [link](https://example.com/\(i)).
@@ -217,8 +223,8 @@ private func generateMarkdown(sections: Int) -> String {
             ---
 
             Another paragraph to close section \(i).
-            """)
+            """
+        )
     }
     return parts.joined(separator: "\n\n")
 }
-

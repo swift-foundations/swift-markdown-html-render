@@ -1,7 +1,7 @@
 import CSS_HTML_Rendering
 import CSS_Theming
-@_spi(DynamicHTML) public import HTML_Rendering_Core
 import HTML_Rendering
+@_spi(DynamicHTML) public import HTML_Rendering_Core
 import Render_Primitives
 
 public struct Markdown: HTML_Rendering_Core.HTML.View {
@@ -50,7 +50,8 @@ public struct Markdown: HTML_Rendering_Core.HTML.View {
     }
 
     public static func _render(
-        _ view: borrowing Self, context: inout Render_Primitives.Render.Context
+        _ view: borrowing Self,
+        context: inout Render_Primitives.Render.Context
     ) {
         let document = SwiftMarkdown.Document(
             parsing: view.markdownString,

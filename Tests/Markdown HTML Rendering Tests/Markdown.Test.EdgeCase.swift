@@ -17,7 +17,7 @@ extension Markdown.Test.EdgeCase {
                 existingSlugs: []
             )
             let slug = gen.generate(input)
-            #expect(slug == "")
+            #expect(slug.isEmpty)
         }
 
         @Test
@@ -28,7 +28,7 @@ extension Markdown.Test.EdgeCase {
                 existingSlugs: []
             )
             let slug = gen.generate(input)
-            #expect(slug == "")
+            #expect(slug.isEmpty)
         }
 
         @Test
@@ -81,7 +81,7 @@ extension Markdown.Test.EdgeCase {
             let result = String(markdown: {
                 let _: [String] = []
             })
-            #expect(result == "")
+            #expect(result.isEmpty)
         }
 
         @Test
@@ -103,7 +103,7 @@ extension Markdown.Test.EdgeCase {
         @Test
         func `empty markdown produces empty string`() {
             let result = String(stripping: "")
-            #expect(result == "")
+            #expect(result.isEmpty)
         }
 
         @Test

@@ -1,6 +1,5 @@
 import CSS_HTML_Rendering
 import CSS_Theming
-
 public import HTML_Rendering
 
 extension Markdown {
