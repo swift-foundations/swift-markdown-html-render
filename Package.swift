@@ -34,6 +34,9 @@ extension Target.Dependency {
     static var ownershipMutablePrimitives: Self {
         .product(name: "Ownership Mutable Primitives", package: "swift-ownership-primitives")
     }
+    static var standardLibraryExtensions: Self {
+        .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions")
+    }
 }
 
 let package = Package(
@@ -56,6 +59,7 @@ let package = Package(
         .package(url: "https://github.com/swiftlang/swift-markdown", from: "0.4.0"),
         .package(url: "https://github.com/apple/swift-collections", from: "1.1.2"),
         .package(url: "https://github.com/swift-primitives/swift-ownership-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-standard-library-extensions.git", branch: "main"),
     ],
     targets: [
         .target(
@@ -73,6 +77,7 @@ let package = Package(
                 .swiftMarkdown,
                 .orderedCollections,
                 .ownershipMutablePrimitives,
+                .standardLibraryExtensions,
             ]
         ),
         .target(

@@ -1,9 +1,9 @@
 import CSS_HTML_Rendering
 import CSS_Theming
-import Foundation
 import HTML_Rendering
 @_spi(DynamicHTML) import HTML_Rendering_Core
 import Render_Primitives
+import Standard_Library_Extensions
 
 extension Markdown.Rendering {
     /// A ``SwiftMarkdown.MarkupVisitor`` that produces ``Render.Action`` arrays
@@ -443,7 +443,7 @@ extension Markdown.Rendering {
                 guard !remaining.isEmpty else { break }
 
                 guard let colonIndex = remaining.firstIndex(of: ":") else { break }
-                let key = String(remaining[..<colonIndex]).trimmingCharacters(in: .whitespaces)
+                let key = String(remaining[..<colonIndex].trimming(where: { $0.isWhitespace && !$0.isNewline }))
                 remaining = remaining[remaining.index(after: colonIndex)...]
 
                 remaining = remaining.drop { $0.isWhitespace }
