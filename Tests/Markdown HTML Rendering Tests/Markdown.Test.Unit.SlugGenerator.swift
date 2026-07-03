@@ -3,6 +3,7 @@
 //  swift-markdown-html-rendering
 //
 
+import Foundation
 import Markdown_HTML_Rendering
 import Testing
 
