@@ -3,7 +3,6 @@
 //  swift-markdown-html-rendering
 //
 
-import Foundation
 import Markdown_HTML_Rendering
 import Testing
 
@@ -73,7 +72,7 @@ extension Markdown.Test.Unit {
         @Test
         func `custom generator uses provided transform`() {
             let gen = Markdown.Configuration.SlugGenerator.custom { text in
-                text.uppercased().replacingOccurrences(of: " ", with: "_")
+                text.uppercased().replacing(" ", with: "_")
             }
             let input = Markdown.Configuration.SlugGenerator.Input(
                 text: "Hello World",
