@@ -443,7 +443,9 @@ extension Markdown.Rendering {
                 guard !remaining.isEmpty else { break }
 
                 guard let colonIndex = remaining.firstIndex(of: ":") else { break }
-                let key = String(remaining[..<colonIndex].trimming(where: { $0.isWhitespace && !$0.isNewline }))
+                let key = String(
+                    remaining[..<colonIndex].trimming(where: { $0.isWhitespace && !$0.isNewline })
+                )
                 remaining = remaining[remaining.index(after: colonIndex)...]
 
                 remaining = remaining.drop { $0.isWhitespace }
