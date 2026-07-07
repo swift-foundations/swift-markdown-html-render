@@ -6,7 +6,9 @@
 //
 
 // Inline SVG for heading links
-struct LinkIcon: HTML.View, Sendable {
+struct LinkIcon: HTML.View, Sendable {}
+
+extension LinkIcon {
     var body: some HTML.View {
         HTML.Raw(
             """

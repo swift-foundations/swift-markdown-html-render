@@ -12,10 +12,6 @@ extension Markdown {
     /// and returns the complete action sequence for the element, with O(1) stack
     /// depth interpretation.
     public struct Rendering: Sendable {
-        /// Bridge to the L1 ``Render.Action`` type, avoiding name shadowing
-        /// in nested extensions where `Rendering` resolves to `Markdown.Rendering`.
-        public typealias Action = Render_Primitives.Render.Action
-
         public var heading: Heading
         public var paragraph: Paragraph
         public var codeBlock: CodeBlock
@@ -78,6 +74,10 @@ extension Markdown {
 }
 
 extension Markdown.Rendering {
+    /// Bridge to the L1 ``Render.Action`` type, avoiding name shadowing
+    /// in nested extensions where `Rendering` resolves to `Markdown.Rendering`.
+    public typealias Action = Render_Primitives.Render.Action
+
     public static var `default`: Self { .init() }
 }
 

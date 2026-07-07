@@ -17,10 +17,12 @@ extension Markdown.Diagnostic {
         init(_ content: String) {
             self.rawSVG = content
         }
+    }
+}
 
-        public var body: some HTML.View {
-            HTML.Raw(rawSVG)
-        }
+extension Markdown.Diagnostic.Icon {
+    public var body: some HTML.View {
+        HTML.Raw(rawSVG)
     }
 }
 

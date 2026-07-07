@@ -19,7 +19,9 @@ public struct Timestamp: HTML.View {
         self.second = second
         self.speaker = speaker
     }
+}
 
+extension Timestamp {
     public var duration: Int {
         hour * 60 * 60 + minute * 60 + second
     }

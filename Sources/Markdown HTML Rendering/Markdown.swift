@@ -21,7 +21,9 @@ public struct Markdown: HTML_Rendering_Core.HTML.View {
         self.previewOnly = previewOnly
         self.markdownString = markdown()
     }
+}
 
+extension Markdown {
     public var body: some HTML.View { HTML.Empty() }
 
     private static let outerFrame = Rendering.Frame {
@@ -97,15 +99,17 @@ extension Markdown {
         public let level: Int
         public let timestamp: Timestamp?
 
-        public var anchor: String {
-            "#\(id)"
-        }
-
         public init(title: String, id: String, level: Int, timestamp: Timestamp?) {
             self.title = title
             self.id = id
             self.level = level
             self.timestamp = timestamp
         }
+    }
+}
+
+extension Markdown.Section {
+    public var anchor: String {
+        "#\(id)"
     }
 }

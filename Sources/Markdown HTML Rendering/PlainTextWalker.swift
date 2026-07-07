@@ -12,6 +12,9 @@ extension String {
 
 private struct PlainTextWalker: SwiftMarkdown.MarkupWalker {
     var text = ""
+}
+
+extension PlainTextWalker {
     mutating func visitEmphasis(_ emphasis: SwiftMarkdown.Emphasis) {
         text.append(emphasis.plainText)
     }

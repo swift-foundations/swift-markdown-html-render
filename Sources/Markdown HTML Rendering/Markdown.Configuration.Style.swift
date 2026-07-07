@@ -25,9 +25,11 @@ extension Markdown.Configuration {
             self.blockQuote = blockQuote
             self.icons = icons
         }
-
-        public static var `default`: Self { .init() }
     }
+}
+
+extension Markdown.Configuration.Style {
+    public static var `default`: Self { .init() }
 }
 
 // MARK: - DiagnosticStyle
@@ -40,26 +42,28 @@ extension Markdown.Configuration.Style {
         public init(_ level: @escaping @Sendable (_ name: String) -> Markdown.Diagnostic.Level?) {
             self.level = level
         }
+    }
+}
 
-        public static var `default`: Self {
-            .init { name in
-                switch name {
-                case "Error": return .error
-                case "Expected Failure": return .knownIssue
-                case "Failed": return .issue
-                case "Runtime Warning": return .runtimeWarning
-                case "Warning": return .warning
-                default: return nil
-                }
+extension Markdown.Configuration.Style.DiagnosticStyle {
+    public static var `default`: Self {
+        .init { name in
+            switch name {
+            case "Error": return .error
+            case "Expected Failure": return .knownIssue
+            case "Failed": return .issue
+            case "Runtime Warning": return .runtimeWarning
+            case "Warning": return .warning
+            default: return nil
             }
         }
+    }
 
-        /// Add a custom diagnostic level for a specific name.
-        public func adding(_ name: String, _ diagnosticLevel: Markdown.Diagnostic.Level) -> Self {
-            DiagnosticStyle { n in
-                if n == name { return diagnosticLevel }
-                return self.level(n)
-            }
+    /// Add a custom diagnostic level for a specific name.
+    public func adding(_ name: String, _ diagnosticLevel: Markdown.Diagnostic.Level) -> Self {
+        Markdown.Configuration.Style.DiagnosticStyle { n in
+            if n == name { return diagnosticLevel }
+            return self.level(n)
         }
     }
 }
@@ -82,34 +86,36 @@ extension Markdown.Configuration.Style {
         ) {
             self.style = style
         }
+    }
+}
 
-        public static var `default`: Self {
-            .init { name in
-                switch name {
-                case "Warning", "Correction":
-                    return (backgroundColor: .background.warning, borderColor: .border.warning)
-                case "Important":
-                    return (
-                        backgroundColor: .background.highlighted, borderColor: .border.highlighted
-                    )
-                case "Announcement", "Tip":
-                    return (backgroundColor: .background.info, borderColor: .border.info)
-                default:
-                    return (backgroundColor: .background.neutral, borderColor: .border.neutral)
-                }
+extension Markdown.Configuration.Style.BlockQuoteStyle {
+    public static var `default`: Self {
+        .init { name in
+            switch name {
+            case "Warning", "Correction":
+                return (backgroundColor: .background.warning, borderColor: .border.warning)
+            case "Important":
+                return (
+                    backgroundColor: .background.highlighted, borderColor: .border.highlighted
+                )
+            case "Announcement", "Tip":
+                return (backgroundColor: .background.info, borderColor: .border.info)
+            default:
+                return (backgroundColor: .background.neutral, borderColor: .border.neutral)
             }
         }
+    }
 
-        /// Add a custom style for a specific block quote type.
-        public func adding(
-            _ name: String,
-            backgroundColor: DarkModeColor,
-            borderColor: DarkModeColor
-        ) -> Self {
-            BlockQuoteStyle { n in
-                if n == name { return (backgroundColor: backgroundColor, borderColor: borderColor) }
-                return self.style(n)
-            }
+    /// Add a custom style for a specific block quote type.
+    public func adding(
+        _ name: String,
+        backgroundColor: DarkModeColor,
+        borderColor: DarkModeColor
+    ) -> Self {
+        Markdown.Configuration.Style.BlockQuoteStyle { n in
+            if n == name { return (backgroundColor: backgroundColor, borderColor: borderColor) }
+            return self.style(n)
         }
     }
 }
@@ -122,12 +128,6 @@ extension Markdown.Configuration.Style {
         public var link: @Sendable () -> HTML.AnyView
         public var diagnostic: @Sendable (DiagnosticIconKind) -> HTML.AnyView
 
-        public enum DiagnosticIconKind: Sendable {
-            case error
-            case failure
-            case warning
-        }
-
         public init(
             link: @escaping @Sendable () -> HTML.AnyView,
             diagnostic: @escaping @Sendable (DiagnosticIconKind) -> HTML.AnyView
@@ -135,27 +135,35 @@ extension Markdown.Configuration.Style {
             self.link = link
             self.diagnostic = diagnostic
         }
+    }
+}
 
-        public static var `default`: Self {
-            .init(
-                link: {
-                    HTML.AnyView {
-                        LinkIcon()
-                    }
-                },
-                diagnostic: { kind in
-                    HTML.AnyView {
-                        switch kind {
-                        case .error:
-                            Markdown.Diagnostic.Icon.error
-                        case .failure:
-                            Markdown.Diagnostic.Icon.failure
-                        case .warning:
-                            Markdown.Diagnostic.Icon.warning
-                        }
+extension Markdown.Configuration.Style.Icons {
+    public enum DiagnosticIconKind: Sendable {
+        case error
+        case failure
+        case warning
+    }
+
+    public static var `default`: Self {
+        .init(
+            link: {
+                HTML.AnyView {
+                    LinkIcon()
+                }
+            },
+            diagnostic: { kind in
+                HTML.AnyView {
+                    switch kind {
+                    case .error:
+                        Markdown.Diagnostic.Icon.error
+                    case .failure:
+                        Markdown.Diagnostic.Icon.failure
+                    case .warning:
+                        Markdown.Diagnostic.Icon.warning
                     }
                 }
-            )
-        }
+            }
+        )
     }
 }

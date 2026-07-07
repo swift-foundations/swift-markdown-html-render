@@ -45,50 +45,52 @@ extension Markdown.Rendering {
             self.prefix = Array(state.value.actions[..<splitIndex])
             self.suffix = Array(state.value.actions[splitIndex...])
         }
+    }
+}
 
-        /// Splices children into the cached frame.
-        ///
-        /// Returns: prefix + children + suffix.
-        public func applying(children: [Action]) -> [Action] {
-            var result: [Action] = []
-            result.reserveCapacity(prefix.count + children.count + suffix.count)
-            result.append(contentsOf: prefix)
-            result.append(contentsOf: children)
-            result.append(contentsOf: suffix)
-            return result
-        }
+extension Markdown.Rendering.Frame {
+    /// Splices children into the cached frame.
+    ///
+    /// Returns: prefix + children + suffix.
+    public func applying(children: [Markdown.Rendering.Action]) -> [Markdown.Rendering.Action] {
+        var result: [Markdown.Rendering.Action] = []
+        result.reserveCapacity(prefix.count + children.count + suffix.count)
+        result.append(contentsOf: prefix)
+        result.append(contentsOf: children)
+        result.append(contentsOf: suffix)
+        return result
+    }
 
-        /// Splices children and attributes into the cached frame.
-        ///
-        /// Attributes are injected before the innermost element push,
-        /// matching the position that view modifiers (`.id()`, `.attribute()`)
-        /// produce in a normal capture.
-        ///
-        /// Returns: prefix (with attributes before last element push) + children + suffix.
-        public func applying(
-            children: [Action],
-            attributes: [Action]
-        ) -> [Action] {
-            if attributes.isEmpty { return applying(children: children) }
+    /// Splices children and attributes into the cached frame.
+    ///
+    /// Attributes are injected before the innermost element push,
+    /// matching the position that view modifiers (`.id()`, `.attribute()`)
+    /// produce in a normal capture.
+    ///
+    /// Returns: prefix (with attributes before last element push) + children + suffix.
+    public func applying(
+        children: [Markdown.Rendering.Action],
+        attributes: [Markdown.Rendering.Action]
+    ) -> [Markdown.Rendering.Action] {
+        if attributes.isEmpty { return applying(children: children) }
 
-            // Find the last pushElement in prefix — attributes go before it
-            var insertIndex = prefix.count
-            for i in stride(from: prefix.count - 1, through: 0, by: -1) {
-                if case .push(.element) = prefix[i] {
-                    insertIndex = i
-                    break
-                }
+        // Find the last pushElement in prefix — attributes go before it
+        var insertIndex = prefix.count
+        for i in stride(from: prefix.count - 1, through: 0, by: -1) {
+            if case .push(.element) = prefix[i] {
+                insertIndex = i
+                break
             }
-
-            var result: [Action] = []
-            result.reserveCapacity(prefix.count + attributes.count + children.count + suffix.count)
-            result.append(contentsOf: prefix[..<insertIndex])
-            result.append(contentsOf: attributes)
-            result.append(contentsOf: prefix[insertIndex...])
-            result.append(contentsOf: children)
-            result.append(contentsOf: suffix)
-            return result
         }
+
+        var result: [Markdown.Rendering.Action] = []
+        result.reserveCapacity(prefix.count + attributes.count + children.count + suffix.count)
+        result.append(contentsOf: prefix[..<insertIndex])
+        result.append(contentsOf: attributes)
+        result.append(contentsOf: prefix[insertIndex...])
+        result.append(contentsOf: children)
+        result.append(contentsOf: suffix)
+        return result
     }
 }
 
@@ -101,17 +103,19 @@ extension Markdown.Rendering.Frame {
     /// The frame captures everything before it as `prefix` and everything after as `suffix`.
     public struct Placeholder: HTML.View, Sendable {
         public init() {}
+    }
+}
 
-        public var body: some HTML.View { HTML.Empty() }
+extension Markdown.Rendering.Frame.Placeholder {
+    public var body: some HTML.View { HTML.Empty() }
 
-        public static func _render(
-            _ view: borrowing Self,
-            context: inout Render_Primitives.Render.Context
-        ) {
-            // Signal the frame capturer to record the split point.
-            // For non-frame contexts this is a no-op (empty splice).
-            context.splice([])
-        }
+    public static func _render(
+        _ view: borrowing Self,
+        context: inout Render_Primitives.Render.Context
+    ) {
+        // Signal the frame capturer to record the split point.
+        // For non-frame contexts this is a no-op (empty splice).
+        context.splice([])
     }
 }
 

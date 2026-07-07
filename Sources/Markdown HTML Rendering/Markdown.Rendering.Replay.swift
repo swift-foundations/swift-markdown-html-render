@@ -8,14 +8,16 @@ extension Markdown.Rendering {
     /// into HTML view trees rendered through a capturing context.
     struct Replay: HTML.View, Sendable {
         let actions: [Render_Primitives.Render.Action]
+    }
+}
 
-        var body: some HTML.View { HTML.Empty() }
+extension Markdown.Rendering.Replay {
+    var body: some HTML.View { HTML.Empty() }
 
-        static func _render(
-            _ view: borrowing Self,
-            context: inout Render_Primitives.Render.Context
-        ) {
-            context.splice(view.actions)
-        }
+    static func _render(
+        _ view: borrowing Self,
+        context: inout Render_Primitives.Render.Context
+    ) {
+        context.splice(view.actions)
     }
 }

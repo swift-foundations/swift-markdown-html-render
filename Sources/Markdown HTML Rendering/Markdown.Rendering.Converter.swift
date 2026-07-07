@@ -12,8 +12,6 @@ extension Markdown.Rendering {
     /// This flattens the rendering stack from O(view tree depth) to O(1),
     /// eliminating the stack overflow caused by deeply nested `AnyView` trees.
     struct Converter: SwiftMarkdown.MarkupVisitor {
-        typealias Result = [Render.Action]
-
         let rendering: Markdown.Rendering
         let configuration: Markdown.Configuration
         let previewOnly: Bool
@@ -32,8 +30,13 @@ extension Markdown.Rendering {
             self.configuration = configuration
             self.previewOnly = previewOnly
         }
+    }
+}
 
-        // MARK: - Default Visit
+extension Markdown.Rendering.Converter {
+    typealias Result = [Render.Action]
+
+    // MARK: - Default Visit
 
         mutating func defaultVisit(
             _ markup: any SwiftMarkdown.Markup
@@ -469,7 +472,6 @@ extension Markdown.Rendering {
 
             return result
         }
-    }
 }
 
 extension SwiftMarkdown.Table.ColumnAlignment {

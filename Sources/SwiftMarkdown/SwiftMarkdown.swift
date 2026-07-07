@@ -15,7 +15,9 @@
 // MARK: - SwiftMarkdown Namespace
 
 /// Namespace for swift-markdown types, avoiding collision with our `Markdown` enum.
-public enum SwiftMarkdown {
+public enum SwiftMarkdown {}
+
+extension SwiftMarkdown {
 
     // MARK: - Document Types
 
