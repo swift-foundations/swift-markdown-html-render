@@ -25,6 +25,9 @@ extension Target.Dependency {
     static var cssTheming: Self {
         .product(name: "CSS Theming", package: "swift-css")
     }
+    static var cssHTMLLayoutRendering: Self {
+        .product(name: "CSS HTML Layout Rendering", package: "swift-css-html-layout-render")
+    }
     static var appleSwiftMarkdown: Self {
         .product(name: "Markdown", package: "swift-markdown")
     }
@@ -56,6 +59,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/swift-foundations/swift-html-render.git", branch: "main"),
         .package(url: "https://github.com/swift-foundations/swift-css.git", branch: "main"),
+        .package(url: "https://github.com/swift-foundations/swift-css-html-layout-render.git", branch: "main"),
         .package(url: "https://github.com/swiftlang/swift-markdown.git", from: "0.4.0"),
         .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.2"),
         .package(url: "https://github.com/swift-primitives/swift-ownership-primitives.git", branch: "main"),
@@ -74,6 +78,7 @@ let package = Package(
                 .htmlRendering,
                 .css,
                 .cssTheming,
+                .cssHTMLLayoutRendering,
                 .swiftMarkdown,
                 .orderedCollections,
                 .ownershipMutablePrimitives,
