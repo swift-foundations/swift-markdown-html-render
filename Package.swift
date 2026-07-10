@@ -56,8 +56,8 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/swift-foundations/swift-html-render.git", branch: "main"),
         .package(url: "https://github.com/swift-foundations/swift-css.git", branch: "main"),
-        .package(url: "https://github.com/swiftlang/swift-markdown", from: "0.4.0"),
-        .package(url: "https://github.com/apple/swift-collections", from: "1.1.2"),
+        .package(url: "https://github.com/swiftlang/swift-markdown.git", from: "0.4.0"),
+        .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.2"),
         .package(url: "https://github.com/swift-primitives/swift-ownership-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-standard-library-extensions.git", branch: "main"),
     ],
