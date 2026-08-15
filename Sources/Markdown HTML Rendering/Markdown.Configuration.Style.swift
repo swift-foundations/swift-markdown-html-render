@@ -95,12 +95,15 @@ extension Markdown.Configuration.Style.BlockQuoteStyle {
             switch name {
             case "Warning", "Correction":
                 return (backgroundColor: .background.warning, borderColor: .border.warning)
+
             case "Important":
                 return (
                     backgroundColor: .background.highlighted, borderColor: .border.highlighted
                 )
+
             case "Announcement", "Tip":
                 return (backgroundColor: .background.info, borderColor: .border.info)
+
             default:
                 return (backgroundColor: .background.neutral, borderColor: .border.neutral)
             }
@@ -157,8 +160,10 @@ extension Markdown.Configuration.Style.Icons {
                     switch kind {
                     case .error:
                         Markdown.Diagnostic.Icon.error
+
                     case .failure:
                         Markdown.Diagnostic.Icon.failure
+
                     case .warning:
                         Markdown.Diagnostic.Icon.warning
                     }

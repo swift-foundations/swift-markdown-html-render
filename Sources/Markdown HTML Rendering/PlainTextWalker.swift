@@ -1,4 +1,8 @@
 extension String {
+    // reason: `SwiftMarkdown.Markup` is a protocol from the upstream swift-markdown
+    // package; its own API surface (e.g. `MarkupWalker.visit`) is fixed to `any Markup`,
+    // so a generic constraint here cannot be threaded through without forking the walker.
+    // swiftlint:disable:next no_any_protocol_existential
     public init(stripping markup: any SwiftMarkdown.Markup) {
         var walker = PlainTextWalker()
         walker.visit(markup)

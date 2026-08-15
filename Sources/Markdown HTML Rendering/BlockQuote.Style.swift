@@ -18,12 +18,15 @@ extension SwiftMarkdown.BlockQuote {
             case "Warning", "Correction":
                 self.backgroundColor = .background.warning
                 self.borderColor = .border.warning
+
             case "Important":
                 self.backgroundColor = .background.highlighted
                 self.borderColor = .border.highlighted
+
             case "Announcement", "Tip":
                 self.backgroundColor = .background.info
                 self.borderColor = .border.info
+
             default:
                 self.backgroundColor = .background.neutral
                 self.borderColor = .border.neutral

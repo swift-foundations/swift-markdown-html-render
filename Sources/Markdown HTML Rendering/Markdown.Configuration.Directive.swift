@@ -91,6 +91,7 @@ extension Markdown.Configuration.Directives {
             switch self.handler(directive) {
             case .useDefault:
                 return other.handler(directive)
+
             case let result:
                 return result
             }

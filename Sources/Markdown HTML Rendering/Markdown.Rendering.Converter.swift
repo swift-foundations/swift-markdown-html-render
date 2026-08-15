@@ -38,6 +38,10 @@ extension Markdown.Rendering.Converter {
 
     // MARK: - Default Visit
 
+    // reason: `SwiftMarkdown.Markup` is a protocol from the upstream swift-markdown
+    // package; its own API surface (e.g. `MarkupWalker.visit`) is fixed to `any Markup`,
+    // so a generic constraint here cannot be threaded through without forking the walker.
+    // swiftlint:disable no_any_protocol_existential
     mutating func defaultVisit(
         _ markup: any SwiftMarkdown.Markup
     ) -> [Render.Action] {
@@ -48,6 +52,7 @@ extension Markdown.Rendering.Converter {
         }
         return actions
     }
+    // swiftlint:enable no_any_protocol_existential
 
     // MARK: - Text
 
@@ -417,8 +422,10 @@ extension Markdown.Rendering.Converter {
         switch result {
         case .rendered(let view):
             return Markdown.Rendering.capture { view }
+
         case .suppress:
             return []
+
         case .useDefault:
             return childActions
         }
