@@ -18,6 +18,7 @@ extension Render.Context {
                 ) {
                     add(class: className)
                 }
+
             default:
                 interpret(action)
             }
