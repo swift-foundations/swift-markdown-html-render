@@ -32,7 +32,7 @@ extension Markdown.Rendering.Link {
                 HTML.Anchor.Element(href: .init(input.destination ?? "#")) {
                     Markdown.Rendering.Replay(actions: input.children)
                 }
-                .attribute(HTML.Title.Attribute.tag, input.title)
+                .attribute(HTML.Title.Element.tag, input.title)
             }
         }
     }

@@ -34,7 +34,7 @@ extension Markdown.Rendering.Image {
             return Markdown.Rendering.capture {
                 VStack(alignment: .center) {
                     HTML.Anchor.Element(href: .init(value: source)) {
-                        HTML_Rendering.Image(
+                        HTML.Image.Element(
                             src: .init(value: source),
                             alt: .init(value: input.title ?? "")
                         )

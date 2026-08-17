@@ -15,7 +15,7 @@ extension Markdown.Rendering {
 extension Markdown.Rendering.ThematicBreak {
     private static let cached = Markdown.Rendering.capture {
         HTML.ContentDivision.Element {
-            HTML_Rendering.ThematicBreak()
+            HTML.ThematicBreak.Element()
                 .css
                 .borderRight(BorderRight.none)
                 .borderBottom(BorderBottom.none)

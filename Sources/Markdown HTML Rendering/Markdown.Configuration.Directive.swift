@@ -67,7 +67,9 @@ extension Markdown.Configuration.Directives {
                 .rendered(
                     HTML.AnyView {
                         HTML.Video.Element {
-                            HTML.Source.Element(src: directive.arguments["source"].map(HTML.Src.Attribute.init))
+                            HTML.Source.Element(
+                                src: directive.arguments["source"].map(HTML.Src.Attribute.init)
+                            )
                         }
                         .attribute("poster", directive.arguments["poster"])
                         .attribute("controls")
