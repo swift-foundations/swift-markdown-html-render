@@ -17,10 +17,10 @@ extension Markdown.Diagnostic {
     public func callAsFunction<Message: HTML.View>(
         @HTML.Builder _ message: () -> Message
     ) -> some HTML.View {
-        ContentDivision {
+        HTML.ContentDivision.Element {
             HStack(spacing: 0) {
-                ContentDivision {
-                    ContentDivision {
+                HTML.ContentDivision.Element {
+                    HTML.ContentDivision.Element {
                         self.level.icon
                     }
                     .css
@@ -40,7 +40,7 @@ extension Markdown.Diagnostic {
                 .backgroundColor(self.level.backgroundColor)
                 .padding(Padding.sides(top: .px(8), right: .px(8), bottom: .px(7), left: .px(8)))
 
-                ContentDivision {
+                HTML.ContentDivision.Element {
                     VStack(spacing: 0.5.rem) {
                         message()
                     }

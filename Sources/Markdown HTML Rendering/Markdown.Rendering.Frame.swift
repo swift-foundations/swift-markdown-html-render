@@ -14,7 +14,7 @@ extension Markdown.Rendering {
     ///
     /// ```swift
     /// private static let frame = Markdown.Rendering.Frame {
-    ///     HTML_Rendering.Paragraph {
+    ///     HTML.Paragraph.Element {
     ///         Markdown.Rendering.Frame.Placeholder()
     ///     }
     ///     .css.lineHeight(1.5).padding(.zero).margin(.zero)

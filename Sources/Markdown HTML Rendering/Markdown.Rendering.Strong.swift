@@ -22,7 +22,7 @@ extension Markdown.Rendering.Strong {
 
 extension Markdown.Rendering.Strong {
     private static let frame = Markdown.Rendering.Frame {
-        StrongImportance {
+        HTML.StrongImportance.Element {
             Markdown.Rendering.Frame.Placeholder()
         }
     }

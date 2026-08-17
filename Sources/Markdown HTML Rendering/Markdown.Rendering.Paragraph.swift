@@ -24,7 +24,7 @@ extension Markdown.Rendering.Paragraph {
 
 extension Markdown.Rendering.Paragraph {
     private static let frame = Markdown.Rendering.Frame {
-        HTML_Rendering.Paragraph {
+        HTML.Paragraph.Element {
             Markdown.Rendering.Frame.Placeholder()
         }
         .css

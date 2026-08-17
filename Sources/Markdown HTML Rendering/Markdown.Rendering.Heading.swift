@@ -37,7 +37,7 @@ extension Markdown.Rendering.Heading {
 extension Markdown.Rendering.Heading {
     // Anchor target — captured once with placeholder id, patched at runtime
     private static let anchorTemplate: [Render.Action] = Markdown.Rendering.capture {
-        Anchor {}
+        HTML.Anchor.Element {}
             .id("__HEADING_SLUG__")
             .css
             .display(.block)
@@ -49,7 +49,7 @@ extension Markdown.Rendering.Heading {
 
     // Wrapper div — static CSS, children spliced via Frame
     private static let wrapperFrame = Markdown.Rendering.Frame {
-        ContentDivision {
+        HTML.ContentDivision.Element {
             Markdown.Rendering.Frame.Placeholder()
         }
         .css
@@ -64,7 +64,7 @@ extension Markdown.Rendering.Heading {
 
     // Link icon — captured once with placeholder href, patched at runtime
     private static let linkIconTemplate: [Render.Action] = Markdown.Rendering.capture {
-        Anchor(href: .init(value: "__HEADING_SLUG__")) {
+        HTML.Anchor.Element(href: .init(value: "__HEADING_SLUG__")) {
             LinkIcon()
         }
         .css

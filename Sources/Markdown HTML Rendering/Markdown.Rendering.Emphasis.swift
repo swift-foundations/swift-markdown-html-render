@@ -22,7 +22,7 @@ extension Markdown.Rendering.Emphasis {
 
 extension Markdown.Rendering.Emphasis {
     private static let frame = Markdown.Rendering.Frame {
-        HTML_Rendering.Emphasis {
+        HTML.Emphasis.Element {
             Markdown.Rendering.Frame.Placeholder()
         }
     }

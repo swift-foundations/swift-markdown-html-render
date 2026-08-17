@@ -51,9 +51,9 @@ extension Markdown.Rendering.BlockQuote {
             } else {
                 let style = SwiftMarkdown.BlockQuote.Style(blockName: input.kind)
                 return Markdown.Rendering.capture {
-                    HTML_Rendering.BlockQuote {
+                    HTML.BlockQuote.Element {
                         VStack(spacing: .rem(0.5)) {
-                            StrongImportance {
+                            HTML.StrongImportance.Element {
                                 HTML.Text(input.kind)
                             }
                             .css

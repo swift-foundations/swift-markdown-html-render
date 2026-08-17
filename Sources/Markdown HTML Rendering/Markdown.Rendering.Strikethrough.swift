@@ -22,7 +22,7 @@ extension Markdown.Rendering.Strikethrough {
 
 extension Markdown.Rendering.Strikethrough {
     private static let frame = Markdown.Rendering.Frame {
-        HTML_Rendering.Strikethrough {
+        HTML.Strikethrough.Element {
             Markdown.Rendering.Frame.Placeholder()
         }
     }

@@ -28,7 +28,7 @@ extension Markdown {
     public var body: some HTML.View { HTML.Empty() }
 
     private static let outerFrame = Rendering.Frame {
-        ContentDivision {
+        HTML.ContentDivision.Element {
             VStack(spacing: .rem(0.5)) {
                 Rendering.Frame.Placeholder()
             }
@@ -38,7 +38,7 @@ extension Markdown {
     }
 
     private static let outerFramePreview = Rendering.Frame {
-        ContentDivision {
+        HTML.ContentDivision.Element {
             VStack(spacing: .rem(0.5)) {
                 Rendering.Frame.Placeholder()
             }

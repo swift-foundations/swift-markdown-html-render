@@ -24,7 +24,7 @@ extension Markdown.Rendering.ListItem {
 
 extension Markdown.Rendering.ListItem {
     private static let frame = Markdown.Rendering.Frame {
-        HTML_Rendering.ListItem {
+        HTML.ListItem.Element {
             VStack(spacing: .rem(0.5)) {
                 Markdown.Rendering.Frame.Placeholder()
             }

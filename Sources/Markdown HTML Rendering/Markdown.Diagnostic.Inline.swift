@@ -26,8 +26,8 @@ extension Markdown.Diagnostic.Inline {
     public var body: some HTML.View {
         VStack(alignment: .normal) {
             HStack(spacing: 0.05.rem) {
-                ContentDivision {
-                    ContentDivision {
+                HTML.ContentDivision.Element {
+                    HTML.ContentDivision.Element {
                         level.icon
                     }
                     .css
@@ -49,7 +49,7 @@ extension Markdown.Diagnostic.Inline {
                     Padding.sides(top: .px(4), right: .px(10), bottom: .px(3), left: .px(10))
                 )
 
-                ContentDivision {
+                HTML.ContentDivision.Element {
                     HTML.Text(message)
                 }
                 .css

@@ -33,8 +33,8 @@ extension Markdown.Rendering.Image {
             guard let source = input.source else { return [] }
             return Markdown.Rendering.capture {
                 VStack(alignment: .center) {
-                    Anchor(href: .init(value: source)) {
-                        HTML_Rendering.Image(
+                    HTML.Anchor.Element(href: .init(value: source)) {
+                        HTML.Image.Element(
                             src: .init(value: source),
                             alt: .init(value: input.title ?? "")
                         )
