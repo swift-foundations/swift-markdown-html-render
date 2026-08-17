@@ -42,9 +42,9 @@ extension Timestamp {
     }
 
     public var body: some HTML.View {
-        ContentDivision {
+        HTML.ContentDivision.Element {
             if let speaker {
-                StrongImportance {
+                HTML.StrongImportance.Element {
                     HTML.Text(speaker)
                 }
                 .css
@@ -59,9 +59,9 @@ extension Timestamp {
             }
 
             let duration = self.duration
-            ContentDivision {
-                ContentDivision {
-                    Anchor(href: .init(value: anchor)) {
+            HTML.ContentDivision.Element {
+                HTML.ContentDivision.Element {
+                    HTML.Anchor.Element(href: .init(value: anchor)) {
                         HTML.Text(formatted())
                     }
                     .attribute("data-timestamp", "\(duration)")

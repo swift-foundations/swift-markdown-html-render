@@ -29,10 +29,10 @@ extension Markdown.Rendering.Link {
     public static var `default`: Self {
         .init { input in
             Markdown.Rendering.capture {
-                Anchor(href: .init(input.destination ?? "#")) {
+                HTML.Anchor.Element(href: .init(input.destination ?? "#")) {
                     Markdown.Rendering.Replay(actions: input.children)
                 }
-                .attribute(Title.tag, input.title)
+                .attribute(HTML.Title.Attribute.tag, input.title)
             }
         }
     }

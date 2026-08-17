@@ -28,7 +28,7 @@ extension Markdown.Rendering.CodeBlock {
 
 extension Markdown.Rendering.CodeBlock {
     private static let preFrame = Markdown.Rendering.Frame {
-        PreformattedText {
+        HTML.PreformattedText.Element {
             Markdown.Rendering.Frame.Placeholder()
         }
         .css

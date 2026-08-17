@@ -51,7 +51,7 @@ extension Markdown.Configuration.Directives {
                 .rendered(
                     HTML.AnyView {
                         VStack(alignment: .center) {
-                            Anchor(href: .init(directive.rawArguments)) {
+                            HTML.Anchor.Element(href: .init(directive.rawArguments)) {
                                 directive.children
                             }
                             .css
@@ -66,8 +66,8 @@ extension Markdown.Configuration.Directives {
             case "Video":
                 .rendered(
                     HTML.AnyView {
-                        Video {
-                            Source(src: directive.arguments["source"].map(Src.init))
+                        HTML.Video.Element {
+                            HTML.Source.Element(src: directive.arguments["source"].map(HTML.Src.Attribute.init))
                         }
                         .attribute("poster", directive.arguments["poster"])
                         .attribute("controls")

@@ -26,7 +26,7 @@ extension Markdown.Rendering.List {
 
 extension Markdown.Rendering.List {
     private static let orderedFrame = Markdown.Rendering.Frame {
-        OrderedList {
+        HTML.OrderedList.Element {
             Markdown.Rendering.Frame.Placeholder()
         }
         .css
@@ -36,7 +36,7 @@ extension Markdown.Rendering.List {
     }
 
     private static let unorderedFrame = Markdown.Rendering.Frame {
-        UnorderedList {
+        HTML.UnorderedList.Element {
             Markdown.Rendering.Frame.Placeholder()
         }
         .css

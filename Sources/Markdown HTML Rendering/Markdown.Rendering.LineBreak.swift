@@ -11,7 +11,7 @@ extension Markdown.Rendering {
 }
 
 extension Markdown.Rendering.LineBreak {
-    private static let cached = Markdown.Rendering.capture { BR() }
+    private static let cached = Markdown.Rendering.capture { HTML.BR.Element() }
 
     public static var `default`: Self {
         .init { cached }

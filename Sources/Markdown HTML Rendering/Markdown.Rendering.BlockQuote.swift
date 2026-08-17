@@ -53,7 +53,7 @@ extension Markdown.Rendering.BlockQuote {
                 return Markdown.Rendering.capture {
                     HTML_Rendering.BlockQuote {
                         VStack(spacing: .rem(0.5)) {
-                            StrongImportance {
+                            HTML.StrongImportance.Element {
                                 HTML.Text(input.kind)
                             }
                             .css
