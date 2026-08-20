@@ -1,4 +1,4 @@
-// swift-tools-version: 6.3.3
+// swift-tools-version: 6.4
 
 import PackageDescription
 
@@ -31,9 +31,6 @@ extension Target.Dependency {
     static var appleSwiftMarkdown: Self {
         .product(name: "Markdown", package: "swift-markdown")
     }
-    static var orderedCollections: Self {
-        .product(name: "OrderedCollections", package: "swift-collections")
-    }
     static var ownershipMutablePrimitives: Self {
         .product(name: "Ownership Mutable Primitives", package: "swift-ownership-primitives")
     }
@@ -45,11 +42,11 @@ extension Target.Dependency {
 let package = Package(
     name: "swift-markdown-html-render",
     platforms: [
-        .macOS("27"),
-        .iOS("27"),
-        .tvOS("27"),
-        .watchOS("27"),
-        .visionOS("27"),
+        .macOS(.v27),
+        .iOS(.v27),
+        .tvOS(.v27),
+        .watchOS(.v27),
+        .visionOS(.v27),
     ],
     products: [
         .library(name: .markdownHTMLRendering, targets: [.markdownHTMLRendering]),
@@ -61,7 +58,6 @@ let package = Package(
         .package(url: "https://github.com/swift-foundations/swift-css.git", branch: "main"),
         .package(url: "https://github.com/swift-foundations/swift-css-html-layout-render.git", branch: "main"),
         .package(url: "https://github.com/swiftlang/swift-markdown.git", from: "0.4.0"),
-        .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.2"),
         .package(url: "https://github.com/swift-primitives/swift-ownership-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-standard-library-extensions.git", branch: "main"),
     ],
@@ -80,7 +76,6 @@ let package = Package(
                 .cssTheming,
                 .cssHTMLLayoutRendering,
                 .swiftMarkdown,
-                .orderedCollections,
                 .ownershipMutablePrimitives,
                 .standardLibraryExtensions,
             ]
