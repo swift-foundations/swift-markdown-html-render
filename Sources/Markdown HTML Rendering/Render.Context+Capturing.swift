@@ -1,4 +1,4 @@
-public import Ownership_Mutable_Primitives
+import Ownership_Mutable_Primitives
 import Render_Primitives
 
 extension Render.Context {
