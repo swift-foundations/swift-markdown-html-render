@@ -1,10 +1,3 @@
-//
-//  MarkdownPreviews.swift
-//  swift-markdown-html-rendering
-//
-//  Created by Coen ten Thije Boonkkamp on 16/12/2025.
-//
-
 #if canImport(SwiftUI) && (os(macOS) || os(iOS))
     import SwiftUI
     import HTML_Rendering_Core

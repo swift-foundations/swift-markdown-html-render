@@ -37,9 +37,7 @@ extension Target.Dependency {
     static var standardLibraryExtensions: Self {
         .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions")
     }
-//    static var testing: Self {
-//        .product(name: "Testing", package: "swift-testing")
-//    }
+
 }
 
 let package = Package(
@@ -54,7 +52,7 @@ let package = Package(
     products: [
         .library(name: .markdownHTMLRendering, targets: [.markdownHTMLRendering]),
         .library(name: .markdownPreviews, targets: [.markdownPreviews]),
-//        .library(name: "Markdown HTML Rendering Test Support", targets: ["Markdown HTML Rendering Test Support"]),
+
     ],
     dependencies: [
         .package(url: "https://github.com/swift-foundations/swift-html-render.git", branch: "main"),
@@ -63,7 +61,7 @@ let package = Package(
         .package(url: "https://github.com/swiftlang/swift-markdown.git", from: "0.4.0"),
         .package(url: "https://github.com/swift-primitives/swift-ownership-primitives.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-standard-library-extensions.git", branch: "main"),
-//        .package(url: "https://github.com/swift-foundations/swift-testing.git", branch: "main"),
+
     ],
     targets: [
         .target(
@@ -90,14 +88,7 @@ let package = Package(
                 .markdownHTMLRendering,
             ]
         ),
-//        .target(
-//            name: "Markdown HTML Rendering Test Support",
-//            dependencies: [
-//                .markdownHTMLRendering,
-//                .testing,
-//            ],
-//            path: "Tests/Support"
-//        ),
+
         .testTarget(
             name: .markdownHTMLRendering.tests,
             dependencies: [

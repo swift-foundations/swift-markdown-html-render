@@ -1,34 +1,10 @@
-//
-//  Markdown.Configuration.Directives.swift
-//  swift-markdown-html-rendering
-//
-//  Created by Coen ten Thije Boonkkamp on 16/12/2025.
-//
-
 import CSS_HTML_Layout_Rendering
 import CSS_HTML_Rendering
 import CSS_Theming
 import HTML_Rendering
 
 extension Markdown.Configuration {
-    /// Configuration for handling block directives in markdown.
-    ///
-    /// Block directives are special markdown syntax like `@Button`, `@Video`, etc.
-    /// Use this to add custom directive handlers or override built-in ones.
-    ///
-    /// Example:
-    /// ```swift
-    /// let customDirectives = Markdown.Configuration.Directives { directive in
-    ///     switch directive.name {
-    ///     case "Alert":
-    ///         .rendered(MyAlert(type: directive.arguments["type"]) {
-    ///             directive.children
-    ///         })
-    ///     default:
-    ///         .useDefault
-    ///     }
-    /// }
-    /// ```
+
     public struct Directives: Sendable {
         public var handler:
             @Sendable (Directive) -> Markdown.Configuration.Directives.Directive.Result
@@ -86,8 +62,6 @@ extension Markdown.Configuration.Directives {
         }
     }
 
-    /// Combine multiple directive handlers.
-    /// The first handler that doesn't return `.useDefault` wins.
     public func adding(_ other: Markdown.Configuration.Directives) -> Self {
         Markdown.Configuration.Directives { directive in
             switch self.handler(directive) {
@@ -102,7 +76,7 @@ extension Markdown.Configuration.Directives {
 }
 
 extension Markdown.Configuration.Directives {
-    /// Input for a block directive.
+
     public struct Directive: Sendable {
         public let name: String
         public let rawArguments: String
@@ -124,13 +98,13 @@ extension Markdown.Configuration.Directives {
 }
 
 extension Markdown.Configuration.Directives.Directive {
-    /// Result of handling a directive.
+
     public enum Result: Sendable {
-        /// Use this rendered view
+
         case rendered(HTML.AnyView)
-        /// Fall back to built-in or next handler
+
         case useDefault
-        /// Render nothing (suppress the directive)
+
         case suppress
     }
 }

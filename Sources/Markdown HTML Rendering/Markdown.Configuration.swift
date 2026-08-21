@@ -1,26 +1,9 @@
-//
-//  Markdown.Configuration.swift
-//  swift-markdown-html-rendering
-//
-//  Created by Coen ten Thije Boonkkamp on 16/12/2025.
-//
-
 import CSS_HTML_Rendering
 import CSS_Theming
 import HTML_Rendering
 
 extension Markdown {
-    /// Configuration for customizing markdown rendering behavior.
-    ///
-    /// Use the default configuration for standard rendering, or customize
-    /// individual components.
-    ///
-    /// Example:
-    /// ```swift
-    /// var config = Markdown.Configuration.default
-    /// config.slugGenerator = .init { input in input.plainText.lowercased() }
-    /// Markdown(configuration: config) { "# Hello" }
-    /// ```
+
     public struct Configuration: Sendable {
         public var directives: Directives
         public var style: Style

@@ -61,7 +61,6 @@ extension Markdown {
             options: .parseBlockDirectives
         )
 
-        // Convert markdown → actions
         var converter = Rendering.Converter(
             rendering: view.rendering,
             configuration: view.configuration,
@@ -69,7 +68,6 @@ extension Markdown {
         )
         let contentActions = converter.visit(document)
 
-        // Wrap in outer structure and interpret
         let frame = view.previewOnly ? Self.outerFramePreview : Self.outerFrame
         context.interpret(markdown: frame.applying(children: contentActions))
     }

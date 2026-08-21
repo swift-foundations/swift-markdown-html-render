@@ -35,7 +35,7 @@ extension Markdown.Rendering.Heading {
 }
 
 extension Markdown.Rendering.Heading {
-    // Anchor target — captured once with placeholder id, patched at runtime
+
     private static let anchorTemplate: [Render.Action] = Markdown.Rendering.capture {
         HTML.Anchor.Element {}
             .id("__HEADING_SLUG__")
@@ -47,7 +47,6 @@ extension Markdown.Rendering.Heading {
             .visibility(.hidden)
     }
 
-    // Wrapper div — static CSS, children spliced via Frame
     private static let wrapperFrame = Markdown.Rendering.Frame {
         HTML.ContentDivision.Element {
             Markdown.Rendering.Frame.Placeholder()
@@ -62,7 +61,6 @@ extension Markdown.Rendering.Heading {
         .position(.relative)
     }
 
-    // Link icon — captured once with placeholder href, patched at runtime
     private static let linkIconTemplate: [Render.Action] = Markdown.Rendering.capture {
         HTML.Anchor.Element(href: .init(value: "__HEADING_SLUG__")) {
             LinkIcon()
@@ -77,9 +75,8 @@ extension Markdown.Rendering.Heading {
         .width(Width.rem(2.5))
     }
 
-    // Heading color — captured once, no dynamic values
     private static let headingColorTemplate: [Render.Action] = {
-        // Capture with a dummy h1 tag + empty placeholder to get just the CSS
+
         Markdown.Rendering.capture {
             tag("h1") {}
                 .css
@@ -96,7 +93,6 @@ extension Markdown.Rendering.Heading {
         .init { input in
             var actions: [Render.Action] = []
 
-            // Anchor target — patch id
             for action in anchorTemplate {
                 if case .attribute(set: "id", value: "__HEADING_SLUG__") = action {
                     actions.append(.attribute(set: "id", value: input.slug))
@@ -105,10 +101,8 @@ extension Markdown.Rendering.Heading {
                 }
             }
 
-            // Heading content inside wrapper
             var content: [Render.Action] = []
 
-            // Heading color CSS + dynamic heading tag
             content.append(contentsOf: headingColorTemplate)
             content.append(
                 .push(
@@ -122,7 +116,6 @@ extension Markdown.Rendering.Heading {
             )
             content.append(contentsOf: input.children)
 
-            // Link icon — patch href
             for action in linkIconTemplate {
                 if case .attribute(set: "href", value: "__HEADING_SLUG__") = action {
                     content.append(.attribute(set: "href", value: "#\(input.slug)"))

@@ -1,19 +1,6 @@
-//
-//  Action Rendering Performance Tests.swift
-//  swift-markdown-html-rendering
-//
-//  Measures the new action-based rendering pipeline:
-//  1. Markdown → [Render.Action] (DirectConverter)
-//  2. [Render.Action] → HTML bytes (interpret into HTML context)
-//
-//  Compared against the existing HTML string pipeline (String(markdown))
-//  to validate the action path is not slower.
-
 import Markdown_HTML_Rendering
 import Render_Primitives
 import Testing
-
-// MARK: - Markdown Content Fixtures
 
 private let simpleMarkdown = """
     # Hello World
@@ -72,13 +59,9 @@ private let largeMarkdown: String = {
     return sections.joined(separator: "\n\n")
 }()
 
-// MARK: - Action Path: Markdown → Render.Context (new pipeline)
-
 extension `Performance Tests` {
     @Suite(.serialized)
     struct `Action Rendering` {
-
-        // MARK: - Simple document
 
         @Test(.timed(iterations: 200, warmup: 20))
         func `action path - simple document`() {
@@ -94,8 +77,6 @@ extension `Performance Tests` {
             _ = try String(markdown)
         }
 
-        // MARK: - Medium document
-
         @Test(.timed(iterations: 100, warmup: 10))
         func `action path - medium document`() {
             let state = Ownership.Mutable(HTML_Rendering_Core.HTML.Context())
@@ -110,8 +91,6 @@ extension `Performance Tests` {
             _ = try String(markdown)
         }
 
-        // MARK: - Large document (20 sections)
-
         @Test(.timed(iterations: 20, warmup: 2))
         func `action path - large document`() {
             let state = Ownership.Mutable(HTML_Rendering_Core.HTML.Context())
@@ -125,8 +104,6 @@ extension `Performance Tests` {
             let markdown = Markdown { largeMarkdown }
             _ = try String(markdown)
         }
-
-        // MARK: - Throughput at scale
 
         @Test(.timed(iterations: 500, warmup: 50))
         func `action throughput - simple`() {
@@ -144,14 +121,10 @@ extension `Performance Tests` {
             Markdown._render(view, context: &context)
         }
 
-        // MARK: - Table of contents extraction
-
         @Test(.timed(iterations: 100, warmup: 10))
         func `table of contents - large document`() {
             _ = Markdown.tableOfContents(from: largeMarkdown)
         }
-
-        // MARK: - Extreme stress: documents that would stack-overflow the old pipeline
 
         @Test(.timed(iterations: 5, warmup: 1))
         func `action path - extreme 100 sections`() {
@@ -179,13 +152,11 @@ extension `Performance Tests` {
             var context = Render.Context.html(state: state)
             let view = Markdown { content }
             Markdown._render(view, context: &context)
-            // If we get here, it didn't stack overflow.
+
             #expect(state.value.bytes.count > 0)
         }
     }
 }
-
-// MARK: - Extreme fixtures
 
 private let extremeMarkdown: String = {
     generateMarkdown(sections: 100)

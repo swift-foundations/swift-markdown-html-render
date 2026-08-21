@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  swift-markdown-html-rendering
-//
-//  Created by Coen ten Thije Boonkkamp on 16/12/2025.
-//
-
 import CSS_HTML_Layout_Rendering
 import CSS_HTML_Rendering
 import CSS_Theming
@@ -54,7 +47,7 @@ extension Markdown.Diagnostic.Inline {
                 }
                 .css
                 .backgroundColor(level.backgroundColor)
-                //                .color(.black.withDarkColor(.white))
+
                 .title(message)
                 .css
                 .minWidth(0)

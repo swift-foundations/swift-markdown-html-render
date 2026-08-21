@@ -48,7 +48,7 @@ extension Markdown.Diagnostic {
                 }
                 .css
                 .backgroundColor(self.level.detailBackgroundColor)
-                //                .color(.black.withDarkColor(.white))
+
                 .flexGrow()
                 .padding(.px(8))
             }

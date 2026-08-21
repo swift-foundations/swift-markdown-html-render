@@ -21,8 +21,7 @@ extension Markdown.Rendering.InlineCode {
 }
 
 extension Markdown.Rendering.InlineCode {
-    // InlineCode has dynamic content (input.code) — Frame with Placeholder
-    // for the text, but code text is the "child" of the <code> element.
+
     private static let frame = Markdown.Rendering.Frame {
         HTML.Code.Element {
             Markdown.Rendering.Frame.Placeholder()

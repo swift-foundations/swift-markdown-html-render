@@ -6,11 +6,7 @@ import Ownership_Mutable_Primitives
 public import Render_Primitives
 
 extension Markdown {
-    /// Action-based element renderers for direct markdown rendering.
-    ///
-    /// Each closure receives pre-rendered children as ``Render.Action`` arrays
-    /// and returns the complete action sequence for the element, with O(1) stack
-    /// depth interpretation.
+
     public struct Rendering: Sendable {
         public var heading: Heading
         public var paragraph: Paragraph
@@ -74,21 +70,14 @@ extension Markdown {
 }
 
 extension Markdown.Rendering {
-    /// Bridge to the L1 ``Render.Action`` type, avoiding name shadowing
-    /// in nested extensions where `Rendering` resolves to `Markdown.Rendering`.
+
     public typealias Action = Render_Primitives.Render.Action
 
     public static var `default`: Self { .init() }
 }
 
-// MARK: - Capture Helper
-
 extension Markdown.Rendering {
-    /// Renders an HTML view tree through a capturing context, producing actions.
-    ///
-    /// This bridges the existing HTML view infrastructure to the action-based
-    /// rendering pipeline. CSS styles, attributes, and element structure are
-    /// faithfully captured as ``Render.Action`` values.
+
     static func capture<V: HTML.View>(
         @HTML.Builder _ content: () -> V
     ) -> [Action] {

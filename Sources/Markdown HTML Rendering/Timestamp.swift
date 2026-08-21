@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  swift-markdown-html-rendering
-//
-//  Created by Coen ten Thije Boonkkamp on 16/12/2025.
-//
-
 public struct Timestamp: HTML.View {
     public var hour: Int
     public var minute: Int

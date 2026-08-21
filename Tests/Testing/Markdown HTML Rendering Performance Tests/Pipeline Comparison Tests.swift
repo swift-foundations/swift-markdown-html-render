@@ -1,18 +1,7 @@
-//
-//  Pipeline Comparison Tests.swift
-//  swift-markdown-html-rendering
-//
-//  Compares layers of the rendering pipeline at book scale to identify bottlenecks:
-//  1. SwiftMarkdown parsing only (Document(parsing:))
-//  2. Our action production (parse + DirectConverter)
-//  3. Our full pipeline (parse + actions + interpret into HTML context)
-
 import Markdown_HTML_Rendering
 import Render_Primitives
 import SwiftMarkdown
 import Testing
-
-// MARK: - Book-scale fixture (100 sections ≈ short book chapter)
 
 private let bookChapter: String = {
     var parts: [String] = ["# Chapter: The Architecture of Rendering"]
@@ -71,20 +60,14 @@ private let bookChapter: String = {
     return parts.joined(separator: "\n\n")
 }()
 
-// MARK: - Comparison Suite
-
 extension `Performance Tests` {
     @Suite(.serialized)
     struct `Pipeline Comparison` {
-
-        // MARK: - Layer 1: SwiftMarkdown parsing only
 
         @Test(.timed(iterations: 20, warmup: 2))
         func `parse only - 100 sections`() {
             let _ = SwiftMarkdown.Document(parsing: bookChapter, options: .parseBlockDirectives)
         }
-
-        // MARK: - Layer 1b: SwiftMarkdown parse + bare HTML visitor (no CSS, no styling)
 
         @Test(.timed(iterations: 20, warmup: 2))
         func `swift-markdown raw HTML - 100 sections`() {
@@ -92,8 +75,6 @@ extension `Performance Tests` {
             var visitor = BareHTMLVisitor()
             _ = visitor.visit(doc)
         }
-
-        // MARK: - Layer 2: Our full action pipeline → HTML
 
         @Test(.timed(iterations: 20, warmup: 2))
         func `full action pipeline - 100 sections`() {
@@ -103,15 +84,11 @@ extension `Performance Tests` {
             Markdown_HTML_Rendering.Markdown._render(view, context: &context)
         }
 
-        // MARK: - Layer 3: Old string pipeline for comparison
-
         @Test(.timed(iterations: 20, warmup: 2))
         func `old string pipeline - 100 sections`() throws {
             let markdown = Markdown_HTML_Rendering.Markdown { bookChapter }
             _ = try String(markdown)
         }
-
-        // MARK: - Scale test: 500 sections (≈ full book)
 
         @Test(
             .disabled("slow — re-enable for book-scale profiling"),
@@ -146,11 +123,6 @@ extension `Performance Tests` {
     }
 }
 
-// MARK: - Bare HTML Visitor (what you'd get using swift-markdown directly)
-
-/// Minimal MarkupVisitor that produces unstyled HTML strings.
-/// No CSS classes, no flexbox, no responsive styles — just raw semantic HTML.
-/// This is the baseline: what swift-markdown gives you with a simple visitor.
 private struct BareHTMLVisitor: SwiftMarkdown.MarkupVisitor {
     typealias Result = String
 
@@ -287,8 +259,6 @@ private struct BareHTMLVisitor: SwiftMarkdown.MarkupVisitor {
         return "<s>\(children)</s>"
     }
 }
-
-// MARK: - Generator
 
 private func generateBook(sections: Int) -> String {
     var parts: [String] = ["# Book Title"]

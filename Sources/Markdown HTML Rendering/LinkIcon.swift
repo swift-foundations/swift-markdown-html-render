@@ -1,11 +1,3 @@
-//
-//  File.swift
-//  swift-markdown-html-rendering
-//
-//  Created by Coen ten Thije Boonkkamp on 16/12/2025.
-//
-
-// Inline SVG for heading links
 struct LinkIcon: HTML.View, Sendable {}
 
 extension LinkIcon {

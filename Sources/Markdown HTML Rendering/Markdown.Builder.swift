@@ -1,10 +1,3 @@
-//
-//  Markdown.Builder.swift
-//  swift-html-markdown
-//
-//  Created by Coen ten Thije Boonkkamp on 08/08/2024.
-//
-
 import HTML_Rendering
 
 extension Markdown {
@@ -54,7 +47,6 @@ extension Markdown {
             return expression.map { [$0] } ?? []
         }
 
-        // Add missing methods for completeness
         public static func buildLimitedAvailability(_ component: [String]) -> [String] {
             return component
         }
@@ -65,14 +57,12 @@ extension Markdown {
     }
 }
 
-// Enhanced extension with Markdown-specific formatting options
 extension Markdown.Builder {
-    /// Joins components with double newlines for paragraph separation
+
     public static func buildFinalResultWithParagraphs(_ component: [String]) -> String {
         return component.filter { !$0.isEmpty }.joined(separator: "\n\n")
     }
 
-    /// Processes markdown content with proper spacing for sections
     public static func processMarkdownSections(_ lines: [String]) -> String {
         var result: [String] = []
         var currentSection: [String] = []
@@ -102,17 +92,13 @@ extension String {
         self = builder()
     }
     @_disfavoredOverload
-    /// Creates a markdown string with proper paragraph spacing (double newlines between sections)
+
     public init(@Markdown.Builder markdownWithParagraphs builder: () -> [String]) {
         self = Markdown.Builder.buildFinalResultWithParagraphs(builder())
     }
     @_disfavoredOverload
-    /// Creates a markdown string with intelligent section processing
+
     public init(@Markdown.Builder markdownSections builder: () -> [String]) {
         self = Markdown.Builder.processMarkdownSections(builder())
     }
 }
-
-// Note: Markdown now uses callAsFunction pattern
-// Usage: Markdown(previewOnly: false) { "# Hello" }
-// The builder is still useful for composing markdown strings via String(markdown: { ... })

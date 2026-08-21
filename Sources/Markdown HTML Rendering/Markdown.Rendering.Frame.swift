@@ -5,34 +5,13 @@ import Ownership_Mutable_Primitives
 import Render_Primitives
 
 extension Markdown.Rendering {
-    /// A cached action sequence with a splice point for children.
-    ///
-    /// Compile once from an HTML view tree, then reuse on every call.
-    /// The view tree is rendered through a capturing context exactly once
-    /// (at `static let` initialization); subsequent calls splice children
-    /// into the cached prefix/suffix — no view construction, no `_render` recursion.
-    ///
-    /// ```swift
-    /// private static let frame = Markdown.Rendering.Frame {
-    ///     HTML.Paragraph.Element {
-    ///         Markdown.Rendering.Frame.Placeholder()
-    ///     }
-    ///     .css.lineHeight(1.5).padding(.zero).margin(.zero)
-    /// }
-    ///
-    /// // Each call: O(1) structure + O(children) splice
-    /// frame.applying(children: input.children)
-    /// ```
+
     public struct Frame: Sendable {
-        /// Actions before the children splice point.
+
         public let prefix: [Action]
-        /// Actions after the children splice point.
+
         public let suffix: [Action]
 
-        /// Captures an HTML view tree, splitting at the ``Placeholder``.
-        ///
-        /// The view tree is rendered once through a capturing context.
-        /// The ``Placeholder`` marks where children will be spliced.
         public init<V: HTML.View>(@HTML.Builder _ content: () -> V) {
             let state = Ownership.Mutable(CaptureState())
             var context = Render_Primitives.Render.Context.frameCapturer(into: state)
@@ -49,9 +28,7 @@ extension Markdown.Rendering {
 }
 
 extension Markdown.Rendering.Frame {
-    /// Splices children into the cached frame.
-    ///
-    /// Returns: prefix + children + suffix.
+
     public func applying(children: [Markdown.Rendering.Action]) -> [Markdown.Rendering.Action] {
         var result: [Markdown.Rendering.Action] = []
         result.reserveCapacity(prefix.count + children.count + suffix.count)
@@ -61,20 +38,12 @@ extension Markdown.Rendering.Frame {
         return result
     }
 
-    /// Splices children and attributes into the cached frame.
-    ///
-    /// Attributes are injected before the innermost element push,
-    /// matching the position that view modifiers (`.id()`, `.attribute()`)
-    /// produce in a normal capture.
-    ///
-    /// Returns: prefix (with attributes before last element push) + children + suffix.
     public func applying(
         children: [Markdown.Rendering.Action],
         attributes: [Markdown.Rendering.Action]
     ) -> [Markdown.Rendering.Action] {
         if attributes.isEmpty { return applying(children: children) }
 
-        // Find the last pushElement in prefix — attributes go before it
         var insertIndex = prefix.count
         for i in stride(from: prefix.count - 1, through: 0, by: -1) {
             if case .push(.element) = prefix[i] {
@@ -94,13 +63,8 @@ extension Markdown.Rendering.Frame {
     }
 }
 
-// MARK: - Placeholder
-
 extension Markdown.Rendering.Frame {
-    /// Marks the children splice point inside a ``Frame`` capture.
-    ///
-    /// Place exactly one `Placeholder()` in the view tree passed to `Frame.init`.
-    /// The frame captures everything before it as `prefix` and everything after as `suffix`.
+
     public struct Placeholder: HTML.View, Sendable {
         public init() {}
     }
@@ -113,13 +77,10 @@ extension Markdown.Rendering.Frame.Placeholder {
         _ view: borrowing Self,
         context: inout Render_Primitives.Render.Context
     ) {
-        // Signal the frame capturer to record the split point.
-        // For non-frame contexts this is a no-op (empty splice).
+
         context.splice([])
     }
 }
-
-// MARK: - Frame Capture State
 
 extension Markdown.Rendering.Frame {
     struct CaptureState {
@@ -127,8 +88,6 @@ extension Markdown.Rendering.Frame {
         var childrenIndex: Int? = nil
     }
 }
-
-// MARK: - Frame-Capturing Context Factory
 
 extension Render_Primitives.Render.Context {
     static func frameCapturer(
@@ -177,7 +136,7 @@ extension Render_Primitives.Render.Context {
             },
             spliceActions: { actions in
                 if actions.isEmpty {
-                    // Empty splice from Placeholder — record the split point
+
                     precondition(
                         state.value.childrenIndex == nil,
                         "Frame supports exactly one Placeholder()"

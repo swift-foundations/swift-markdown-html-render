@@ -2,10 +2,7 @@ import Ownership_Mutable_Primitives
 import Render_Primitives
 
 extension Render.Context {
-    /// Creates a rendering context that captures all operations as ``Render.Action`` values.
-    ///
-    /// Used to convert HTML view trees into flat action arrays for the
-    /// ``Markdown.Rendering.Converter`` pipeline.
+
     static func capturing(into buffer: Ownership.Mutable<[Render.Action]>) -> Self {
         .init(
             text: { buffer.value.append(.text($0)) },

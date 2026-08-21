@@ -6,11 +6,7 @@ import Render_Primitives
 import Standard_Library_Extensions
 
 extension Markdown.Rendering {
-    /// A ``SwiftMarkdown.MarkupVisitor`` that produces ``Render.Action`` arrays
-    /// instead of ``HTML.AnyView`` trees.
-    ///
-    /// This flattens the rendering stack from O(view tree depth) to O(1),
-    /// eliminating the stack overflow caused by deeply nested `AnyView` trees.
+
     struct Converter: SwiftMarkdown.MarkupVisitor {
         let rendering: Markdown.Rendering
         let configuration: Markdown.Configuration
@@ -36,12 +32,6 @@ extension Markdown.Rendering {
 extension Markdown.Rendering.Converter {
     typealias Result = [Render.Action]
 
-    // MARK: - Default Visit
-
-    // reason: `SwiftMarkdown.Markup` is a protocol from the upstream swift-markdown
-    // package; its own API surface (e.g. `MarkupWalker.visit`) is fixed to `any Markup`,
-    // so a generic constraint here cannot be threaded through without forking the walker.
-    // swiftlint:disable no_any_protocol_existential
     mutating func defaultVisit(
         _ markup: any SwiftMarkdown.Markup
     ) -> [Render.Action] {
@@ -52,17 +42,12 @@ extension Markdown.Rendering.Converter {
         }
         return actions
     }
-    // swiftlint:enable no_any_protocol_existential
-
-    // MARK: - Text
 
     mutating func visitText(
         _ text: SwiftMarkdown.Text
     ) -> [Render.Action] {
         rendering.text.render(.init(text: text.string))
     }
-
-    // MARK: - Heading
 
     mutating func visitHeading(
         _ heading: SwiftMarkdown.Heading
@@ -85,8 +70,6 @@ extension Markdown.Rendering.Converter {
         )
     }
 
-    // MARK: - Paragraph
-
     mutating func visitParagraph(
         _ paragraph: SwiftMarkdown.Paragraph
     ) -> [Render.Action] {
@@ -96,8 +79,6 @@ extension Markdown.Rendering.Converter {
         }
         return rendering.paragraph.render(.init(children: childActions))
     }
-
-    // MARK: - Code Block
 
     mutating func visitCodeBlock(
         _ codeBlock: SwiftMarkdown.CodeBlock
@@ -122,8 +103,6 @@ extension Markdown.Rendering.Converter {
         )
     }
 
-    // MARK: - Block Quote
-
     mutating func visitBlockQuote(
         _ blockQuote: SwiftMarkdown.BlockQuote
     ) -> [Render.Action] {
@@ -146,8 +125,6 @@ extension Markdown.Rendering.Converter {
         )
     }
 
-    // MARK: - Emphasis
-
     mutating func visitEmphasis(
         _ emphasis: SwiftMarkdown.Emphasis
     ) -> [Render.Action] {
@@ -157,8 +134,6 @@ extension Markdown.Rendering.Converter {
         }
         return rendering.emphasis.render(.init(children: childActions))
     }
-
-    // MARK: - Strong
 
     mutating func visitStrong(
         _ strong: SwiftMarkdown.Strong
@@ -170,8 +145,6 @@ extension Markdown.Rendering.Converter {
         return rendering.strong.render(.init(children: childActions))
     }
 
-    // MARK: - Strikethrough
-
     mutating func visitStrikethrough(
         _ strikethrough: SwiftMarkdown.Strikethrough
     ) -> [Render.Action] {
@@ -182,15 +155,11 @@ extension Markdown.Rendering.Converter {
         return rendering.strikethrough.render(.init(children: childActions))
     }
 
-    // MARK: - Inline Code
-
     mutating func visitInlineCode(
         _ inlineCode: SwiftMarkdown.InlineCode
     ) -> [Render.Action] {
         rendering.inlineCode.render(.init(code: inlineCode.code))
     }
-
-    // MARK: - Link
 
     mutating func visitLink(
         _ link: SwiftMarkdown.Link
@@ -208,8 +177,6 @@ extension Markdown.Rendering.Converter {
         )
     }
 
-    // MARK: - Image
-
     mutating func visitImage(
         _ image: SwiftMarkdown.Image
     ) -> [Render.Action] {
@@ -221,8 +188,6 @@ extension Markdown.Rendering.Converter {
             )
         )
     }
-
-    // MARK: - Lists
 
     mutating func visitOrderedList(
         _ orderedList: SwiftMarkdown.OrderedList
@@ -253,8 +218,6 @@ extension Markdown.Rendering.Converter {
         }
         return rendering.listItem.render(.init(children: childActions))
     }
-
-    // MARK: - Table
 
     mutating func visitTable(
         _ table: SwiftMarkdown.Table
@@ -329,8 +292,6 @@ extension Markdown.Rendering.Converter {
         return actions
     }
 
-    // MARK: - Breaks
-
     mutating func visitLineBreak(
         _ lineBreak: SwiftMarkdown.LineBreak
     ) -> [Render.Action] {
@@ -349,8 +310,6 @@ extension Markdown.Rendering.Converter {
         rendering.thematicBreak.render()
     }
 
-    // MARK: - Raw HTML
-
     mutating func visitHTMLBlock(
         _ html: SwiftMarkdown.HTMLBlock
     ) -> [Render.Action] {
@@ -363,12 +322,10 @@ extension Markdown.Rendering.Converter {
         [.raw(Array(inlineHTML.rawHTML.utf8))]
     }
 
-    // MARK: - Block Directives
-
     mutating func visitBlockDirective(
         _ blockDirective: SwiftMarkdown.BlockDirective
     ) -> [Render.Action] {
-        // Timestamp directive
+
         if blockDirective.name == "T" {
             let segments = blockDirective.argumentText.segments
                 .map(\.trimmedText)
@@ -397,7 +354,6 @@ extension Markdown.Rendering.Converter {
             return []
         }
 
-        // Build children actions
         var mutableSelf = self
         var childActions: [Render.Action] = []
         for child in blockDirective.children {
@@ -405,7 +361,6 @@ extension Markdown.Rendering.Converter {
         }
         self = mutableSelf
 
-        // Build children as AnyView for the directive handler (backward compat)
         let childrenView = HTML.AnyView { Markdown.Rendering.Replay(actions: childActions) }
 
         let directive = Markdown.Configuration.Directives.Directive(
@@ -430,8 +385,6 @@ extension Markdown.Rendering.Converter {
             return childActions
         }
     }
-
-    // MARK: - Helpers
 
     private mutating func generateSlug(for text: String) -> String {
         let slug = configuration.slugGenerator.generate(

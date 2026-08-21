@@ -1,16 +1,9 @@
-//
-//  Markdown.Configuration.Style.swift
-//  swift-markdown-html-rendering
-//
-//  Created by Coen ten Thije Boonkkamp on 16/12/2025.
-//
-
 import CSS_HTML_Rendering
 import CSS_Theming
 import HTML_Rendering
 
 extension Markdown.Configuration {
-    /// Configuration for styling various markdown components.
+
     public struct Style: Sendable {
         public var diagnostic: DiagnosticStyle
         public var blockQuote: BlockQuoteStyle
@@ -32,10 +25,8 @@ extension Markdown.Configuration.Style {
     public static var `default`: Self { .init() }
 }
 
-// MARK: - DiagnosticStyle
-
 extension Markdown.Configuration.Style {
-    /// Configuration for diagnostic rendering (errors, warnings, etc.)
+
     public struct DiagnosticStyle: Sendable {
         public var level: @Sendable (_ name: String) -> Markdown.Diagnostic.Level?
 
@@ -59,7 +50,6 @@ extension Markdown.Configuration.Style.DiagnosticStyle {
         }
     }
 
-    /// Add a custom diagnostic level for a specific name.
     public func adding(_ name: String, _ diagnosticLevel: Markdown.Diagnostic.Level) -> Self {
         Markdown.Configuration.Style.DiagnosticStyle { n in
             if n == name { return diagnosticLevel }
@@ -68,10 +58,8 @@ extension Markdown.Configuration.Style.DiagnosticStyle {
     }
 }
 
-// MARK: - BlockQuoteStyle
-
 extension Markdown.Configuration.Style {
-    /// Configuration for block quote styling.
+
     public struct BlockQuoteStyle: Sendable {
         public var style:
             @Sendable (_ name: String) -> (
@@ -110,7 +98,6 @@ extension Markdown.Configuration.Style.BlockQuoteStyle {
         }
     }
 
-    /// Add a custom style for a specific block quote type.
     public func adding(
         _ name: String,
         backgroundColor: DarkModeColor,
@@ -123,10 +110,8 @@ extension Markdown.Configuration.Style.BlockQuoteStyle {
     }
 }
 
-// MARK: - Icons
-
 extension Markdown.Configuration.Style {
-    /// Configuration for icon rendering.
+
     public struct Icons: Sendable {
         public var link: @Sendable () -> HTML.AnyView
         public var diagnostic: @Sendable (DiagnosticIconKind) -> HTML.AnyView
